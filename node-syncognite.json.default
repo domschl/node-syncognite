@@ -7,7 +7,7 @@
         "Express": {
             "require": "./modules/node-syncognite-express.js",
             "active": true,
-            "DocumentRoot": "./client",
+            "DocumentRoot": "./htmlclient",
             "PrivateKey": "./Certs/node-syncognite-key.pem",
             "Certificate": "./Certs/node-syncognite-pub.pem",
             "WebServerUseHttps": true,
