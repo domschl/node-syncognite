@@ -1,0 +1,37 @@
+{
+    "modules": {
+        "Util": {
+            "require": "./modules/node-syncognite-util.js",
+            "active": true
+        },
+        "Express": {
+            "require": "./modules/node-syncognite-express.js",
+            "active": true,
+            "DocumentRoot": "./client",
+            "PrivateKey": "./Certs/node-syncognite-key.pem",
+            "Certificate": "./Certs/node-syncognite-pub.pem",
+            "WebServerUseHttps": true,
+            "WebServerPort": 3000
+        },
+        "MongoDb": {
+            "require": "./modules/node-syncognite-mongo.js",
+            "active": true
+        },
+        "WebSocket": {
+            "require": "./modules/node-syncognite-websocket.js",
+            "active": true,
+            "WebSocketUseHttps": true
+        },
+        "ZeroMQ": {
+            "require": "./modules/node-syncognite-zeromq.js",
+            "active": true,
+            "ZmqReqSocket": 5101,
+            "ZmqPubSocket": 5102
+        },
+        "Fhem": {
+            "require": "./modules/node-syncognite-fhem.js",
+            "active": false,
+            "FhemAddress": "localhost:8083"
+        }
+    }
+}

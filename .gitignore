@@ -38,3 +38,12 @@ jspm_packages
 
 # local Node modules
 node_modules/
+
+# Emacs
+*~
+\#*\#
+
+node-syncognite.json
+
+.directory
+
