@@ -60,7 +60,7 @@ function fhemLongPoll(fhemAddress) {
     var curentity=""
     var curProperty=""
     var currval=""
-
+    var st_ignorehtml=0;
     XE.LogF("syncognite","FHEM","Info","Getting something");
     connection.request.get({ // XXX: reconnect?
         url: url
@@ -79,12 +79,12 @@ function fhemLongPoll(fhemAddress) {
         isConnected=1;
         hasError=0;
         for (var i = 0; i < evs.length; i++) {
-                if (evs[i].length > 3) {
-                    try {
+            if (evs[i].length > 3) {
+                try {
                     obj=JSON.parse(evs[i]);
-                    } catch (e) {
+                } catch (e) {
                     olddata=evs[i]
-                    XE.LogF("syncognite","FHEM","Debug","Incomplete data received: "+evs[i]);
+                    // XE.LogF("syncognite","FHEM","Debug","Incomplete data received: "+evs[i]);
                     break;
                 }
                 if (obj.length != 3) {
@@ -95,13 +95,13 @@ function fhemLongPoll(fhemAddress) {
                 //CLog.console(evs[i]);
                 var dd=obj[0].split("-");
                 if (dd.length==1) { // just HTML garbage, was just a state in earlier versions
-                    XE.LogF("syncognite","FHEM","Debug","HTML data ignored for "+dd[0])    
+                    st_ignorehtml += 1;
+                    // XE.LogF("syncognite","FHEM","Debug","HTML data ignored for "+dd[0])    
                     // fhemSetEntity(obj[0],"state",obj[1],Date.now()/1000.0);
                     // curentity=""
                     // curProperty=""
                     // currval=""
-                }
-                if (dd.length==2) {
+                } else if (dd.length==2) {
                     curentity=dd[0]
                     curProperty=dd[1]
                     curval=obj[1]
@@ -117,7 +117,7 @@ function fhemLongPoll(fhemAddress) {
                     curProperty=""
                     currval=""
                 } else {
-                    XE.LogF("syncognite","FHEM","Error","Messed up entity: "+obj[0]);
+                    XE.LogF("syncognite","FHEM","Error","Entity: "+obj[0]+" record length unexpected: "+dd.length);
                     break;
                 }
             }
