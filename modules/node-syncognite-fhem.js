@@ -22,6 +22,7 @@ function fhemSetEntity(entity, property, val, timestamp) {
     var m = new Date(timestamp*1000.0);
     CLog.console("t:"+CLog.date(m));
     var msg= {MsgType:"EntityMsg", Entity: entity, Property: property, Value: val, Time: timestamp};
+    CLog.console("SetProperty: "+JSON.stringify(msg));
     XE.ent(msg);
     // entitySetProperty(entity, property, val, timestamp);
 }
@@ -36,6 +37,7 @@ function fhemLongPoll(fhemAddress) {
     var filter = ".*";
     var since = "null";
     var address = fhemAddress;
+    var olddata = "";
 
     if (pollActive) {
         XE.LogF("syncognite","FHEM","Warning","Possible recursion avoided?");
@@ -55,14 +57,17 @@ function fhemLongPoll(fhemAddress) {
     // console.log('starting longpoll: ' + url);
     // console.log('---------------------------')
     pollActive=1;
+    var curentity=""
+    var curProperty=""
+    var currval=""
+
+    XE.LogF("syncognite","FHEM","Info","Getting something");
     connection.request.get({ // XXX: reconnect?
         url: url
     }).on('data', function(data) {
-        var str=""+data;
+        var str=olddata+data;
+        olddata = "";
         var evs = str.split("\n");
-        var curentity=""
-        var curProperty=""
-        var currval=""
         if (isConnected==0) {
             if (wasConnected==0) {
                 XE.LogF("syncognite","FHEM","Info","Connected to FHEM server");
@@ -77,21 +82,26 @@ function fhemLongPoll(fhemAddress) {
                 if (evs[i].length > 3) {
                     try {
                     obj=JSON.parse(evs[i]);
-                } catch (e) {
-                    XE.LogF("syncognite","FHEM","Error","Invalid object received"+evs[i]);
+                    } catch (e) {
+                    olddata=evs[i]
+                    XE.LogF("syncognite","FHEM","Debug","Incomplete data received: "+evs[i]);
                     break;
                 }
                 if (obj.length != 3) {
                     XE.LogF("syncognite","FHEM","Error","Unexpected length "+obj.length);
                     break;
                 }
+                //XE.LogF("syncognite","FHEM","Debug","Data: "+evs[i]);
+                //CLog.console(evs[i]);
                 var dd=obj[0].split("-");
-                if (dd.length==1) { // just a state
-                    fhemSetEntity(obj[0],"state",obj[1],Date.now()/1000.0);
-                    var curentity=""
-                    var curProperty=""
-                    var currval=""
-                } else if (dd.length==2) {
+                if (dd.length==1) { // just HTML garbage, was just a state in earlier versions
+                    XE.LogF("syncognite","FHEM","Debug","HTML data ignored for "+dd[0])    
+                    // fhemSetEntity(obj[0],"state",obj[1],Date.now()/1000.0);
+                    // curentity=""
+                    // curProperty=""
+                    // currval=""
+                }
+                if (dd.length==2) {
                     curentity=dd[0]
                     curProperty=dd[1]
                     curval=obj[1]
@@ -100,10 +110,12 @@ function fhemLongPoll(fhemAddress) {
                         XE.LogF("syncognite","FHEM","Error","Unexpected timestamp record: "+obj[0])
                         break;
                     }
-                    fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1].replace(" ","T"))/1000.0);
-                    var curentity=""
-                    var curProperty=""
-                    var currval=""
+                    // 'T' would cause UTC, but FHEM timestamps are just localtime
+                    //fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1].replace(" ","T"))/1000.0);
+                    fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1])/1000.0);                    
+                    curentity=""
+                    curProperty=""
+                    currval=""
                 } else {
                     XE.LogF("syncognite","FHEM","Error","Messed up entity: "+obj[0]);
                     break;
@@ -134,7 +146,8 @@ var Fhem = function() {};
 
 Fhem.prototype.init = function(md) {
   if (md['FhemAddress'].length > 0) {
-    XE.LogF("syncognite","FHEM","Info","Starting long poll to FHEM server at "+md['FhemAddress']);
+      XE.LogF("syncognite","FHEM","Info","Starting long poll to FHEM server at "+md['FhemAddress']);
+      CLog.console("FHEM long poll at: "+md['FhemAddress']);
     fhemLongPoll(md['FhemAddress']);
   }
 }
