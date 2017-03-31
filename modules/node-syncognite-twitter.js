@@ -3,6 +3,8 @@ var XE = require('../node-syncognite.js');
 
 // https://www.npmjs.com/package/twitter
 var TW = require('twitter');
+// https://github.com/thisandagain/sentiment
+var SENTI = require('sentiment');
 
 function twitterSetEntity(entity, property, val, timestamp) {
     var msg= {MsgType:"EntityMsg", Entity: entity, Property: property, Value: val, Time: timestamp};
@@ -25,6 +27,11 @@ Twitter.prototype.init = function(md) {
         var property='tweet'
         var value=event.text
         var timestamp=Date.now()/1000.0
+        twitterSetEntity(entity,property,value,timestamp);
+        var se=SENTI(event.text);
+        var property='sentiment';
+        // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room'], words: [], positive: [], negative: [] }
+        var value=se['score'];
         twitterSetEntity(entity,property,value,timestamp);
     });
     
