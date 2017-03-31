@@ -7,7 +7,7 @@ An event broker for neural nets
 ## Prerequisites
 ### Node
 ```
-npm install mongodb mqtt express ws node-uuid zmq
+npm install mongodb mqtt express ws node-uuid zmq lyql
 ```
 ### Backends
 ```
