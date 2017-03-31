@@ -51,8 +51,6 @@ Stock.prototype.init = function(md) {
     var im = function(s) { return invstockcmds[s] };
     
     options['Parameters']=md['Parameters'].map(im);
-
-    console.log(options);
     
     var ticker = new LYQL(options, function(data) {
         for (var entity in data) {
