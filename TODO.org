@@ -1,0 +1,12 @@
+* Modules
+  - [ ] https://www.npmjs.com/package/reddit-stream
+  - [ ] https://www.npmjs.com/package/googleapis
+
+* Live configure
+** translation topics into module-options for the different stream types
+
+* MongoDB interface for training
+
+
+
+
