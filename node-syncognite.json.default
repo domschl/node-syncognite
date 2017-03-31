@@ -38,6 +38,15 @@
             "active": true,
             "Stocks": ["GOOG", "AAPL", "EURUSD=X"],
             "Parameters": ["pricerealtime", "percentchangerealtime", "volume"]
+        },
+        "Twitter": {
+            "require": "./modules/node-syncognite-twitter.js",
+            "active": true,
+            "Track": "artificial intelligence,deeplearning,deep learning",
+            "consumer_key": "",
+            "consumer_secret": "",
+            "access_token_key": "",
+            "access_token_secret": ""
         }
     }
 }
