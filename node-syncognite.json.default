@@ -35,7 +35,9 @@
         }
         "Stocks": {
             "require": "./modules/node-syncognite-stocks.js",
-            "active": true
+            "active": true,
+            "Stocks": ["GOOG", "AAPL", "EURUSD=X"],
+            "Parameters": ["pricerealtime", "percentchangerealtime", "volume"]
         }
     }
 }
