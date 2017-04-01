@@ -42,7 +42,9 @@
         "Twitter": {
             "require": "./modules/node-syncognite-twitter.js",
             "active": true,
-            "Track": "artificial intelligence,deeplearning,deep learning",
+            "topics": {"Google": ["google stock", "google result", "google market", "google artificial", "google ai", "google invest", "google alphabet" ],
+                       "Apple": ["apple stock", "apple result", "apple market", "apple artificial", "apple ai", "apple invest"],
+                       "EuroUSD": ["euro pound", "pound exchange", "euro exchange", "pound value", "euro value", "euro export", "pound export"]},
             "consumer_key": "",
             "consumer_secret": "",
             "access_token_key": "",
