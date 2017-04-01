@@ -20,18 +20,36 @@ Twitter.prototype.init = function(md) {
         access_token_key: md['access_token_key'],
         access_token_secret: md['access_token_secret']
     });
+    var topics=md['topics'];
+    var tracker="";
+
+    for (var ent in topics) {
+        var topic=topics[ent];
+        for (var kwin in topic) {
+            tracker = tracker + topic[kwin] + ", ";
+        }
+    }
     
-    var stream = client.stream('statuses/filter', {track: md['Track']});
+    var stream = client.stream('statuses/filter', {track: tracker});
     stream.on('data', function(event) {
-        var entity='twitter'
-        var property='tweet'
-        var value=event.text
-        var timestamp=Date.now()/1000.0
+        var entity='twitter';
+        var property='tweet';
+        var value=event.text;
+        var timestamp=Date.now()/1000.0;
+        for (var ent in topics) {
+            var topiclist=topics[ent];
+            for (var tin in topiclist) {
+                var tl=topiclist[tin].split(" ");
+                
+            }
+        
         twitterSetEntity(entity,property,value,timestamp);
         var se=SENTI(event.text);
         var property='sentiment';
         // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room'], words: [], positive: [], negative: [] }
         var value=se['score'];
+
+        
         twitterSetEntity(entity,property,value,timestamp);
     });
     

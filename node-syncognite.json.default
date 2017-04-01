@@ -36,9 +36,9 @@
         "Stocks": {
             "require": "./modules/node-syncognite-stocks.js",
             "active": true,
-            "Stocks": ["GOOG", "AAPL", "EURUSD=X"],
-            "Parameters": ["pricerealtime", "percentchangerealtime", "volume"]
-        },
+            "stocks": {"Google":"GOOG", "Apple":"AAPL", "Euro/USD": "EURUSD=X"},
+            "parameters": ["pricerealtime", "percentchangerealtime", "volume"]
+         },
         "Twitter": {
             "require": "./modules/node-syncognite-twitter.js",
             "active": true,

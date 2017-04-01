@@ -26,8 +26,8 @@ var stockcmds = {
     "t53": "disputedtimestampforcommodities",
     "t54": "disputedtimestampforstocks",
     "v53": "volume"
-}
-var invstockcmds = {}
+};
+var invstockcmds = {};
 
 function stockSetEntity(entity, property, val, timestamp) {
     var msg= {MsgType:"EntityMsg", Entity: entity, Property: property, Value: val, Time: timestamp};
@@ -43,20 +43,29 @@ Stock.prototype.init = function(md) {
             invstockcmds[val]=key;
         }
     }
+    var tickertable=md['stocks'];
+    var tickerlist=[];
+    var invtickertable={};
+    for (var name in tickertable) {
+        var val=tickertable[name];
+        tickerlist.push(val);
+        invtickertable[val]=name;
+    }
 
-    options={};
-    options['Stocks']=md['Stocks']
-    options['Parameters']=[]
+    var options={};
+    options['Stocks']=tickerlist;
+    options['Parameters']=[];
 
     var im = function(s) { return invstockcmds[s] };
     
-    options['Parameters']=md['Parameters'].map(im);
+    options['Parameters']=md['parameters'].map(im);
     
     var ticker = new LYQL(options, function(data) {
-        for (var entity in data) {
-            for (var prop in data[entity]) {
+        for (var ent in data) {
+            for (var prop in data[ent]) {
+                var entity = invtickertable[ent];
                 var property=stockcmds[prop];
-                var vals = data[entity][prop];
+                var vals = data[ent][prop];
                 var value=vals.replace(/[,+]/g,'');
                 var timestamp = Math.floor(Date.now()/1000);
                 stockSetEntity(entity,property,value,timestamp);
