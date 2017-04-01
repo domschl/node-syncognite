@@ -13,6 +13,22 @@ function twitterSetEntity(entity, property, val, timestamp) {
 
 var Twitter = function() {};
 
+function isContained(text, token) {
+    var textb=" "+text+" ";
+    var seps=" #\\.\\,;:\\-\"'\\(\\)";
+    var sr1="["+seps+"]";
+    var searchreg=sr1+token+sr1;
+    var re = new RegExp(searchreg,"i");
+    if (textb.search(searchreg)!= (-1)) {
+        //console.log(text+": "+token+" <"+searchreg+"> -> true");
+        return true;
+    } else {
+        // console.log(text+": "+token+" <"+searchreg+"> -> false");
+        return false;
+    }
+}
+
+
 Twitter.prototype.init = function(md) {
     var client = new TW({
         consumer_key: md['consumer_key'],
@@ -43,7 +59,7 @@ Twitter.prototype.init = function(md) {
                 for (var tlin in tl) {
                     var kw=tl[tlin].toLowerCase();
                     var twt=event.text.toLowerCase();
-                    if (twt.indexOf(kw)== (-1)) {
+                    if (!isContained(twt,kw)) {
                         isin=false;
                     }
                 }
@@ -52,7 +68,7 @@ Twitter.prototype.init = function(md) {
                     var se=SENTI(event.text);
                     var property='sentiment';
                     // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room'], words: [], positive: [], negative: [] }
-                    var value=se['score'];
+                    var value=se['comparative'];
                     if (value!=0) {
                         twitterSetEntity(entity,property,value,timestamp);
                     }
