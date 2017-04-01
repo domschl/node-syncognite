@@ -32,25 +32,33 @@ Twitter.prototype.init = function(md) {
     
     var stream = client.stream('statuses/filter', {track: tracker});
     stream.on('data', function(event) {
-        var entity='twitter';
         var property='tweet';
         var value=event.text;
         var timestamp=Date.now()/1000.0;
-        for (var ent in topics) {
-            var topiclist=topics[ent];
+        for (var entity in topics) {
+            var topiclist=topics[entity];
             for (var tin in topiclist) {
                 var tl=topiclist[tin].split(" ");
-                
+                var isin=true;
+                for (var tlin in tl) {
+                    var kw=tl[tlin].toLowerCase();
+                    var twt=event.text.toLowerCase();
+                    if (twt.indexOf(kw)== (-1)) {
+                        isin=false;
+                    }
+                }
+                if (isin == true) {                    
+                    twitterSetEntity(entity,property,value,timestamp);
+                    var se=SENTI(event.text);
+                    var property='sentiment';
+                    // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room'], words: [], positive: [], negative: [] }
+                    var value=se['score'];
+                    if (value!=0) {
+                        twitterSetEntity(entity,property,value,timestamp);
+                    }
+                }
             }
-        
-        twitterSetEntity(entity,property,value,timestamp);
-        var se=SENTI(event.text);
-        var property='sentiment';
-        // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room'], words: [], positive: [], negative: [] }
-        var value=se['score'];
-
-        
-        twitterSetEntity(entity,property,value,timestamp);
+        }   
     });
     
     stream.on('error', function(error) {
