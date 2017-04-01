@@ -15,7 +15,7 @@ var Twitter = function() {};
 
 function isContained(text, token) {
     var textb=" "+text+" ";
-    var seps=" #\\.\\,;:\\-\"'\\(\\)";
+    var seps=" #\\.\\,;:\\-\"\\(\\)";
     var sr1="["+seps+"]";
     var searchreg=sr1+token+sr1;
     var re = new RegExp(searchreg,"i");
@@ -69,7 +69,7 @@ Twitter.prototype.init = function(md) {
                     var property='sentiment';
                     // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room'], words: [], positive: [], negative: [] }
                     var value=se['comparative'];
-                    if (value!=0) {
+                    if (Math.abs(value)>0.01) {
                         twitterSetEntity(entity,property,value,timestamp);
                     }
                 }
