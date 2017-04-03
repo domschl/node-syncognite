@@ -123,12 +123,30 @@ function entitySetProperty(entity, property, val, timestamp) {
     return 0;
 }
 
+function cmpEntities(e1, e2) {
+    if (e1 == e2) return true;
+    var se1=e1.split('/');
+    var se2=e2.split('/');
+    for (i in se1.size()) {
+        if (se1[i]=='#') return true;
+        if (se2.size()<i) return false;
+        if (se1[i]=='+') continue;
+        if (se2[i]=='+') continue;
+        if (se1[i]!=se2[i] return false;
+    }
+    return return;
+}
+
 var xEventEntity = function(msg) {
     //    CLog.console("Entity: " + msg["Entity"] + " Property: " + msg["Property"] + " Value: " + msg["Value"]);
     if (entitySetProperty(msg["Entity"], msg["Property"], msg["Value"], msg["Time"]) == -1) {
         return; // Something bad happened!
     }
-    var r1, r2;
+    for (sub in subscriptions) {
+        if (cmpEntities(msg["Entity"], sub.key)) {
+            subscriptions[sub](msg);
+        }
+    }
     if ("WebSocket" in mods) {
         mods['WebSocket']['obj'].entityevent(msg);
     }
@@ -152,6 +170,11 @@ var xEvent = function(message) {
         Log("Websockets", "Error", "Unknown message type: " + msg["MsgType"])
     }
 }
+
+var xSubscribe = function(entity, subFunc) {
+    subscriptions[entity]=subFunc;
+}
+
 
 var Log = function(topic, level, message) {
     var d = new Date();
@@ -185,6 +208,7 @@ var LogF = function(name, topic, level, message) {
 
 module.exports = {
     x: xEvent,
+    sub: xSubscribe,
     ent: xEventEntity,
     Log: Log,
     LogF: LogF
