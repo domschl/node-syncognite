@@ -1,3 +1,5 @@
+var request = require('request');
+
 var CLog = require('./node-syncognite-util.js');
 var XE = require('../node-syncognite.js');
 
@@ -43,7 +45,6 @@ function fhemLongPoll(fhemAddress) {
         XE.LogF("syncognite","FHEM","Warning","Possible recursion avoided?");
         return;
     }
-    var request = require('request');
     this.connection = {
         'base_url': address,
         'request': request
@@ -140,6 +141,30 @@ function fhemLongPoll(fhemAddress) {
         setTimeout(fhemLongPoll, reconnectIntervalError);
     })
 
+}
+
+function fhemInitiallReadall(address) {
+    var request = require('request');
+    this.connection = {
+        'base_url': address,
+        'request': request
+    };
+
+    var query = "/fhem.pl?XHR=1" +
+        "&cmd=jsonlist2"
+
+    var url = encodeURI(address + query);
+    connection.request.get({ 
+        url: url
+    }).on('data', function(data) {
+    })
+    .on( 'end', function() {
+    } )
+    .on('error', function(err) {
+        if (hasError==0) {
+            XE.LogF("syncognite","FHEM","Error","Error: "+err);
+        }
+    })
 }
 
 var Fhem = function() {};

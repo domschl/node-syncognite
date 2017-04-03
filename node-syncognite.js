@@ -4,6 +4,7 @@ var mods = {};
 var CLog = {};
 
 global.entityStates = {};
+global.subscriptions = {};
 
 function setup() {
     var progdir = pa.dirname(process.argv[1]);
