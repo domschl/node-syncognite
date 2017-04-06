@@ -62,84 +62,88 @@ function fhemLongPoll(fhemAddress) {
     var curProperty=""
     var currval=""
     var st_ignorehtml=0;
-    XE.LogF("syncognite","FHEM","Info","Getting something");
-    connection.request.get({ // XXX: reconnect?
-        url: url
-    }).on('data', function(data) {
-        var str=olddata+data;
-        olddata = "";
-        var evs = str.split("\n");
-        if (isConnected==0) {
-            if (wasConnected==0) {
-                XE.LogF("syncognite","FHEM","Info","Connected to FHEM server");
-            } else {
-                XE.LogF("syncognite","FHEM","Info","Reconnected to FHEM server");
+    try {
+        connection.request.get({ // XXX: reconnect?
+            url: url
+        }).on('data', function(data) {
+            var str=olddata+data;
+            olddata = "";
+            var evs = str.split("\n");
+            if (isConnected==0) {
+                if (wasConnected==0) {
+                    XE.LogF("syncognite","FHEM","Info","Connected to FHEM server");
+                } else {
+                    XE.LogF("syncognite","FHEM","Info","Reconnected to FHEM server");
+                }
             }
-        }
-        wasConnected=1;
-        isConnected=1;
-        hasError=0;
-        for (var i = 0; i < evs.length; i++) {
-            if (evs[i].length > 3) {
-                try {
-                    obj=JSON.parse(evs[i]);
-                } catch (e) {
-                    olddata=evs[i]
-                    // XE.LogF("syncognite","FHEM","Debug","Incomplete data received: "+evs[i]);
-                    break;
-                }
-                if (obj.length != 3) {
-                    XE.LogF("syncognite","FHEM","Error","Unexpected length "+obj.length);
-                    break;
-                }
-                //XE.LogF("syncognite","FHEM","Debug","Data: "+evs[i]);
-                //CLog.console(evs[i]);
-                var dd=obj[0].split("-");
-                if (dd.length==1) { // just HTML garbage, was just a state in earlier versions
-                    st_ignorehtml += 1;
-                    // XE.LogF("syncognite","FHEM","Debug","HTML data ignored for "+dd[0])    
-                    // fhemSetEntity(obj[0],"state",obj[1],Date.now()/1000.0);
-                    // curentity=""
-                    // curProperty=""
-                    // currval=""
-                } else if (dd.length==2) {
-                    curentity=dd[0]
-                    curProperty=dd[1]
-                    curval=obj[1]
-                } else if (dd.length==3) {
-                    if (curentity!=dd[0] || curProperty!=dd[1] || dd[2]!="ts") {
-                        XE.LogF("syncognite","FHEM","Error","Unexpected timestamp record: "+obj[0])
+            wasConnected=1;
+            isConnected=1;
+            hasError=0;
+            for (var i = 0; i < evs.length; i++) {
+                if (evs[i].length > 3) {
+                    try {
+                        obj=JSON.parse(evs[i]);
+                    } catch (e) {
+                        olddata=evs[i]
+                        // XE.LogF("syncognite","FHEM","Debug","Incomplete data received: "+evs[i]);
                         break;
                     }
-                    // 'T' would cause UTC, but FHEM timestamps are just localtime
-                    //fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1].replace(" ","T"))/1000.0);
-                    fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1])/1000.0);                    
-                    curentity=""
-                    curProperty=""
-                    currval=""
-                } else {
-                    XE.LogF("syncognite","FHEM","Error","Entity: "+obj[0]+" record length unexpected: "+dd.length);
-                    break;
+                    if (obj.length != 3) {
+                        XE.LogF("syncognite","FHEM","Error","Unexpected length "+obj.length);
+                        break;
+                    }
+                    //XE.LogF("syncognite","FHEM","Debug","Data: "+evs[i]);
+                    //CLog.console(evs[i]);
+                    var dd=obj[0].split("-");
+                    if (dd.length==1) { // just HTML garbage, was just a state in earlier versions
+                        st_ignorehtml += 1;
+                        // XE.LogF("syncognite","FHEM","Debug","HTML data ignored for "+dd[0])    
+                        // fhemSetEntity(obj[0],"state",obj[1],Date.now()/1000.0);
+                        // curentity=""
+                        // curProperty=""
+                        // currval=""
+                    } else if (dd.length==2) {
+                        curentity=dd[0]
+                        curProperty=dd[1]
+                        curval=obj[1]
+                    } else if (dd.length==3) {
+                        if (curentity!=dd[0] || curProperty!=dd[1] || dd[2]!="ts") {
+                            XE.LogF("syncognite","FHEM","Error","Unexpected timestamp record: "+obj[0])
+                            break;
+                        }
+                        // 'T' would cause UTC, but FHEM timestamps are just localtime
+                        //fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1].replace(" ","T"))/1000.0);
+                        fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1])/1000.0);                    
+                        curentity=""
+                        curProperty=""
+                        currval=""
+                    } else {
+                        XE.LogF("syncognite","FHEM","Error","Entity: "+obj[0]+" record length unexpected: "+dd.length);
+                        break;
+                    }
                 }
             }
-        }
-        //        evs = JSON.parse(data);
-        //        for (var i=0; i<evs.length; i++) console.log(evs[i]);
-    })
-    .on( 'end', function() {
-        XE.LogF("syncognite","FHEM","Info","Longpoll-end, restarting");
-        pollActive=0;
-        setTimeout(fhemLongPoll, reconnectIntervalEnd);
-    } )
-    .on('error', function(err) {
-        if (hasError==0) {
-            XE.LogF("syncognite","FHEM","Error","Longpoll-error: "+err);
-        }
-        hasError=1;
-        pollActive=0;
-        isConnected=0;
-        setTimeout(fhemLongPoll, reconnectIntervalError);
-    })
+            //        evs = JSON.parse(data);
+            //        for (var i=0; i<evs.length; i++) console.log(evs[i]);
+        })
+            .on( 'end', function() {
+                XE.LogF("syncognite","FHEM","Info","Longpoll-end, restarting");
+                pollActive=0;
+                setTimeout(fhemLongPoll, reconnectIntervalEnd);
+            } )
+            .on('error', function(err) {
+                if (hasError==0) {
+                    XE.LogF("syncognite","FHEM","Error","Longpoll-error: "+err);
+                }
+                hasError=1;
+                pollActive=0;
+                isConnected=0;
+                setTimeout(fhemLongPoll, reconnectIntervalError);
+            })
+    } catch (e) {
+        XE.LogF("syncognite","FHEM","Error","FHEM longpoll failure");
+        return;
+    }
 
 }
 
@@ -175,6 +179,7 @@ Fhem.prototype.init = function(md) {
       CLog.console("FHEM long poll at: "+md['FhemAddress']);
     fhemLongPoll(md['FhemAddress']);
   }
+    CLog.console("FHEM failure");
 }
 
 module.exports = new Fhem();

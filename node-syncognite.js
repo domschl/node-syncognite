@@ -127,14 +127,19 @@ function cmpEntities(e1, e2) {
     if (e1 == e2) return true;
     var se1=e1.split('/');
     var se2=e2.split('/');
+    if (se1.size() < se2.size()) {
+        var b=se1;
+        se1=se2;
+        se2=b;
+    }
     for (i in se1.size()) {
         if (se1[i]=='#') return true;
         if (se2.size()<i) return false;
         if (se1[i]=='+') continue;
         if (se2[i]=='+') continue;
-        if (se1[i]!=se2[i] return false;
+        if (se1[i]!==se2[i]) return false;
     }
-    return return;
+    return true;
 }
 
 var xEventEntity = function(msg) {
