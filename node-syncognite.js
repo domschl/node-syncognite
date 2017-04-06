@@ -127,14 +127,14 @@ function cmpEntities(e1, e2) {
     if (e1 == e2) return true;
     var se1=e1.split('/');
     var se2=e2.split('/');
-    if (se1.size() < se2.size()) {
+    if (se1.length < se2.length) {
         var b=se1;
         se1=se2;
         se2=b;
     }
-    for (i in se1.size()) {
+    for (i=0; i<se1.length; i++) {
         if (se1[i]=='#') return true;
-        if (se2.size()<i) return false;
+        if (se2.length<i) return false;
         if (se1[i]=='+') continue;
         if (se2[i]=='+') continue;
         if (se1[i]!==se2[i]) return false;
@@ -148,7 +148,7 @@ var xEventEntity = function(msg) {
         return; // Something bad happened!
     }
     for (sub in subscriptions) {
-        if (cmpEntities(msg["Entity"], sub.key)) {
+        if (cmpEntities(msg["Entity"], sub)) {
             subscriptions[sub](msg);
         }
     }

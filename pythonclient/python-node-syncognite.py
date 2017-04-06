@@ -108,6 +108,7 @@ if __name__ == "__main__":
     ec.Log("Warning", "Task", "Looks bad!")
     ec.Log("Fatal", "System", "OMG!")
     ec.Entity("CPU", "Power", 50)
+    ec.Entity("FHEM", "set", "lam on")
     time.sleep(1)
     if ec.unregisterEventCommander() is True:
         print("Successfully unregistered")

@@ -7,9 +7,9 @@ var lastentityFileWrite=0;
 var csrfToken='';
 
 var ignoreProperties = {T:0, azimuth:0, elevation:0, powerFactor:0, current:0,
-    voltage:0, energy:0, pysLevel:0, deviceMsg:0, bass:0, '3dCinemaDsp':0, dsp:0, enhancer:0,
-    inputName:0, adaptiveDrc:0, sleep:0, direct:0, treble:0, compasspoint:0,
-    lastResult:0, aktEvent:0, nextEvent:0, nextEventTime:0, };
+                        voltage:0, energy:0, pysLevel:0, deviceMsg:0, bass:0, '3dCinemaDsp':0, dsp:0, enhancer:0,
+                        inputName:0, adaptiveDrc:0, sleep:0, direct:0, treble:0, compasspoint:0,
+                        lastResult:0, aktEvent:0, nextEvent:0, nextEventTime:0, };
 var ignoreEntityStates = {MacXBMC:0, }
 
 function isIgnore(entity,Property,val) {
@@ -27,7 +27,10 @@ function fhemSetEntity(entity, property, val, timestamp) {
     var msg= {MsgType:"EntityMsg", Entity: entity, Property: property, Value: val, Time: timestamp};
     CLog.console("SetProperty: "+JSON.stringify(msg));
     XE.ent(msg);
-    // entitySetProperty(entity, property, val, timestamp);
+}
+
+function fhemSubscriptions(msg) {
+    CLog.console("Got sub-msg: "+msg);
 }
 
 var reconnectIntervalEnd=200;
@@ -66,7 +69,8 @@ function fhemLongPoll(fhemAddress) {
     try {
         connection.request.get({ // XXX: reconnect?
             url: url
-        }).on('data', function(data) {
+        })
+        .on('data', function(data) {
             var str=olddata+data;
             olddata = "";
             var evs = str.split("\n");
@@ -86,23 +90,15 @@ function fhemLongPoll(fhemAddress) {
                         obj=JSON.parse(evs[i]);
                     } catch (e) {
                         olddata=evs[i]
-                        // XE.LogF("syncognite","FHEM","Debug","Incomplete data received: "+evs[i]);
                         break;
                     }
                     if (obj.length != 3) {
                         XE.LogF("syncognite","FHEM","Error","Unexpected length "+obj.length);
                         break;
                     }
-                    //XE.LogF("syncognite","FHEM","Debug","Data: "+evs[i]);
-                    //CLog.console(evs[i]);
                     var dd=obj[0].split("-");
                     if (dd.length==1) { // just HTML garbage, was just a state in earlier versions
                         st_ignorehtml += 1;
-                        // XE.LogF("syncognite","FHEM","Debug","HTML data ignored for "+dd[0])    
-                        // fhemSetEntity(obj[0],"state",obj[1],Date.now()/1000.0);
-                        // curentity=""
-                        // curProperty=""
-                        // currval=""
                     } else if (dd.length==2) {
                         curentity=dd[0]
                         curProperty=dd[1]
@@ -112,8 +108,6 @@ function fhemLongPoll(fhemAddress) {
                             XE.LogF("syncognite","FHEM","Error","Unexpected timestamp record: "+obj[0])
                             break;
                         }
-                        // 'T' would cause UTC, but FHEM timestamps are just localtime
-                        //fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1].replace(" ","T"))/1000.0);
                         fhemSetEntity(curentity,curProperty,curval,Date.parse(obj[1])/1000.0);                    
                         curentity=""
                         curProperty=""
@@ -124,35 +118,32 @@ function fhemLongPoll(fhemAddress) {
                     }
                 }
             }
-            //        evs = JSON.parse(data);
-            //        for (var i=0; i<evs.length; i++) console.log(evs[i]);
         })
-            .on( 'end', function() {
-                XE.LogF("syncognite","FHEM","Info","Longpoll-end, restarting");
-                pollActive=0;
-                setTimeout(fhemLongPoll, reconnectIntervalEnd);
-            } )
-            .on( 'response', function(response) {
-                if( response.headers && response.headers['x-fhem-csrftoken'] )
-                    csrfToken = response.headers['x-fhem-csrftoken'];
-                else
-                    csrfToken = '';
-                XE.LogF("suncognite","FHEM","Info","csrfToken:"+csrfToken);
-            } )
-            .on('error', function(err) {
-                if (hasError==0) {
-                    XE.LogF("syncognite","FHEM","Error","Longpoll-error: "+err);
-                }
-                hasError=1;
-                pollActive=0;
-                isConnected=0;
-                setTimeout(fhemLongPoll, reconnectIntervalError);
-            })
+        .on( 'end', function() {
+            XE.LogF("syncognite","FHEM","Info","Longpoll-end, restarting");
+            pollActive=0;
+            setTimeout(fhemLongPoll, reconnectIntervalEnd);
+        } )
+        .on( 'response', function(response) {
+            if( response.headers && response.headers['x-fhem-csrftoken'] )
+                csrfToken = response.headers['x-fhem-csrftoken'];
+            else
+                csrfToken = '';
+            XE.LogF("suncognite","FHEM","Info","csrfToken:"+csrfToken);
+        } )
+        .on('error', function(err) {
+            if (hasError==0) {
+                XE.LogF("syncognite","FHEM","Error","Longpoll-error: "+err);
+            }
+            hasError=1;
+            pollActive=0;
+            isConnected=0;
+            setTimeout(fhemLongPoll, reconnectIntervalError);
+        })
     } catch (e) {
         XE.LogF("syncognite","FHEM","Error","FHEM longpoll failure");
         return;
     }
-
 }
 
 function fhemInitiallReadall(address) {
@@ -181,13 +172,14 @@ function fhemInitiallReadall(address) {
 
 var Fhem = function() {};
 
-Fhem.prototype.init = function(md) {
-  if (md['FhemAddress'].length > 0) {
-      XE.LogF("syncognite","FHEM","Info","Starting long poll to FHEM server at "+md['FhemAddress']);
-      CLog.console("FHEM long poll at: "+md['FhemAddress']);
-    fhemLongPoll(md['FhemAddress']);
-  }
-    CLog.console("FHEM failure");
-}
+    Fhem.prototype.init = function(md) {
+        if (md['FhemAddress'].length > 0) {
+            XE.LogF("syncognite","FHEM","Info","Starting long poll to FHEM server at "+md['FhemAddress']);
+            XE.sub("FHEM",fhemSubscriptions);
+            CLog.console("FHEM long poll at: "+md['FhemAddress']);
+            fhemLongPoll(md['FhemAddress']);
+        }
+        CLog.console("FHEM failure");
+    }
 
 module.exports = new Fhem();
