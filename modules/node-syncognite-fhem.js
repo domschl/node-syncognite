@@ -4,6 +4,7 @@ var CLog = require('./node-syncognite-util.js');
 var XE = require('../node-syncognite.js');
 
 var lastentityFileWrite=0;
+var csrfToken='';
 
 var ignoreProperties = {T:0, azimuth:0, elevation:0, powerFactor:0, current:0,
     voltage:0, energy:0, pysLevel:0, deviceMsg:0, bass:0, '3dCinemaDsp':0, dsp:0, enhancer:0,
@@ -130,6 +131,13 @@ function fhemLongPoll(fhemAddress) {
                 XE.LogF("syncognite","FHEM","Info","Longpoll-end, restarting");
                 pollActive=0;
                 setTimeout(fhemLongPoll, reconnectIntervalEnd);
+            } )
+            .on( 'response', function(response) {
+                if( response.headers && response.headers['x-fhem-csrftoken'] )
+                    csrfToken = response.headers['x-fhem-csrftoken'];
+                else
+                    csrfToken = '';
+                XE.LogF("suncognite","FHEM","Info","csrfToken:"+csrfToken);
             } )
             .on('error', function(err) {
                 if (hasError==0) {
