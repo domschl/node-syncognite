@@ -1,7 +1,7 @@
 * Modules
   - [ ] https://www.npmjs.com/package/reddit-stream
   - [ ] https://www.npmjs.com/package/googleapis
-
+  - [ ] https://www.npmjs.com/package/google-trends-api
 * Live configure
 ** translation topics into module-options for the different stream types
 
