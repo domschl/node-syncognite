@@ -39,7 +39,7 @@ function zmqReqEventMessage(message) {
         XE.Log("ZeroMQ","Info","Received registration from EventCommander " + msg["Name"] + " at: "+msg["EventAddress"])
         p = zmqEventCmdClients[msg["Name"]]
         if (p == undefined) {
-            XE.Log("ZeroMQ","Verbose",msg["Name"] + " first registgration")
+            XE.Log("ZeroMQ","Verbose",msg["Name"] + " first registration")
             zmqEventCmdClients[msg["Name"]] = new Object();
         } else {
             XE.Log("ZeroMQ","Verbose",msg["Name"] + " re-registration")

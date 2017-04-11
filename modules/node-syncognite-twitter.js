@@ -78,7 +78,8 @@ Twitter.prototype.init = function(md) {
     });
     
     stream.on('error', function(error) {
-        throw error;
+        XE.LogF("syncognite","Twitter","Error","Twitter stream error: "+error.message);
+        // throw error;
     });
     /*
     // You can also get the stream in a callback if you prefer. 

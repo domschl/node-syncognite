@@ -213,6 +213,7 @@ var LogF = function(name, topic, level, message) {
 
 module.exports = {
     x: xEvent,
+    cmp: cmpEntities,
     sub: xSubscribe,
     ent: xEventEntity,
     Log: Log,
