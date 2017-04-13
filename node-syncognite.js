@@ -4,6 +4,7 @@ var mods = {};
 var CLog = {};
 
 global.entityStates = {};
+global.subscriptions = {};
 
 function setup() {
     var progdir = pa.dirname(process.argv[1]);
@@ -122,12 +123,35 @@ function entitySetProperty(entity, property, val, timestamp) {
     return 0;
 }
 
+function cmpEntities(e1, e2) {
+    if (e1 == e2) return true;
+    var se1=e1.split('/');
+    var se2=e2.split('/');
+    if (se1.length < se2.length) {
+        var b=se1;
+        se1=se2;
+        se2=b;
+    }
+    for (i=0; i<se1.length; i++) {
+        if (se1[i]=='#') return true;
+        if (se2.length<i) return false;
+        if (se1[i]=='+') continue;
+        if (se2[i]=='+') continue;
+        if (se1[i]!==se2[i]) return false;
+    }
+    return true;
+}
+
 var xEventEntity = function(msg) {
     //    CLog.console("Entity: " + msg["Entity"] + " Property: " + msg["Property"] + " Value: " + msg["Value"]);
     if (entitySetProperty(msg["Entity"], msg["Property"], msg["Value"], msg["Time"]) == -1) {
         return; // Something bad happened!
     }
-    var r1, r2;
+    for (sub in subscriptions) {
+        if (cmpEntities(msg["Entity"], sub)) {
+            subscriptions[sub](msg);
+        }
+    }
     if ("WebSocket" in mods) {
         mods['WebSocket']['obj'].entityevent(msg);
     }
@@ -151,6 +175,11 @@ var xEvent = function(message) {
         Log("Websockets", "Error", "Unknown message type: " + msg["MsgType"])
     }
 }
+
+var xSubscribe = function(entity, subFunc) {
+    subscriptions[entity]=subFunc;
+}
+
 
 var Log = function(topic, level, message) {
     var d = new Date();
@@ -184,6 +213,8 @@ var LogF = function(name, topic, level, message) {
 
 module.exports = {
     x: xEvent,
+    cmp: cmpEntities,
+    sub: xSubscribe,
     ent: xEventEntity,
     Log: Log,
     LogF: LogF
