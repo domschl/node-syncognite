@@ -13,5 +13,5 @@ npm install mongodb mqtt express ws node-uuid zmq lyql twitter sentiment
 ```
 ### Backends
 ```
-mongodb mosquittto zeromq
+mongodb zeromq FHEM
 ```
