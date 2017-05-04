@@ -5,6 +5,9 @@ node-syncognite is a Node JS based service that gathers real-time data from home
 
 # Status
 * **PRE-alpha**
+## Next steps
+* encoders for sensor-values
+* generalized seq2seq module for event-translation
 
 ## Prerequisites
 ### Node
