@@ -6,12 +6,12 @@ var mongoLogCollection = "Log";
 var mongoEntityCollection = "Entity";
 var mongoEntitySpace = "EntitySpace";
 
-var Mongo = function() {};
+var Mongo = function () {};
 
-Mongo.prototype.init = function(md) {
+Mongo.prototype.init = function (md) {
     var mongoDbHost = 'mongodb://localhost:27017/LogArchive';
-    var rem=0;
-    MongoClient.connect(mongoDbHost, function(err, db) {
+    var rem = 0;
+    MongoClient.connect(mongoDbHost, function (err, db) {
         if (err) {
             CLog.console("Failed to connect to mongodb database");
             throw err;
@@ -23,7 +23,7 @@ Mongo.prototype.init = function(md) {
             //          limit: 200
         }
         var searchcrt = {};
-        mongoDb.collection(mongoEntitySpace).find(searchcrt, options).toArray(function(err, ents) {
+        mongoDb.collection(mongoEntitySpace).find(searchcrt, options).toArray(function (err, ents) {
             if (err) {
                 CLog.console("EntitySpace search yielded err!");
             } else {
@@ -39,25 +39,25 @@ Mongo.prototype.init = function(md) {
                         entityStates[ent.Entity][ent.Property] = {};
                     }
                 }
-                CLog.console("Remembered entities: "+rem.toString());
+                CLog.console("Remembered entities: " + rem.toString());
             }
         });
     });
 }
 
-Mongo.prototype.db = function() {
+Mongo.prototype.db = function () {
     return mongoDb;
 }
 
-Mongo.prototype.lc = function() {
+Mongo.prototype.lc = function () {
     return mongoLogCollection;
 }
 
-Mongo.prototype.ec = function() {
+Mongo.prototype.ec = function () {
     return mongoEntityCollection;
 }
 
-Mongo.prototype.es = function() {
+Mongo.prototype.es = function () {
     return mongoEntitySpace;
 }
 

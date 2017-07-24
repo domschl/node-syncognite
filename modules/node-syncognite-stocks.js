@@ -30,50 +30,58 @@ var stockcmds = {
 var invstockcmds = {};
 
 function stockSetEntity(entity, property, val, timestamp) {
-    var msg= {MsgType:"EntityMsg", Entity: entity, Property: property, Value: val, Time: timestamp};
+    var msg = {
+        MsgType: "EntityMsg",
+        Entity: entity,
+        Property: property,
+        Value: val,
+        Time: timestamp
+    };
     XE.ent(msg);
 }
 
-var Stock = function() {};
+var Stock = function () {};
 
-Stock.prototype.init = function(md) {
+Stock.prototype.init = function (md) {
     for (var key in stockcmds) {
         if (stockcmds.hasOwnProperty(key)) {
-            val=stockcmds[key];
-            invstockcmds[val]=key;
+            val = stockcmds[key];
+            invstockcmds[val] = key;
         }
     }
-    var tickertable=md['stocks'];
-    var tickerlist=[];
-    var invtickertable={};
+    var tickertable = md['stocks'];
+    var tickerlist = [];
+    var invtickertable = {};
     for (var name in tickertable) {
-        var val=tickertable[name];
+        var val = tickertable[name];
         tickerlist.push(val);
-        invtickertable[val]=name;
+        invtickertable[val] = name;
     }
 
-    var options={};
-    options['Stocks']=tickerlist;
-    options['Parameters']=[];
+    var options = {};
+    options['Stocks'] = tickerlist;
+    options['Parameters'] = [];
 
-    var im = function(s) { return invstockcmds[s] };
-    
-    options['Parameters']=md['parameters'].map(im);
-    
-    var ticker = new LYQL(options, function(data) {
+    var im = function (s) {
+        return invstockcmds[s]
+    };
+
+    options['Parameters'] = md['parameters'].map(im);
+
+    var ticker = new LYQL(options, function (data) {
         for (var ent in data) {
             for (var prop in data[ent]) {
                 var entity = invtickertable[ent];
-                var property=stockcmds[prop];
+                var property = stockcmds[prop];
                 var vals = data[ent][prop];
-                var value=vals.replace(/[,+]/g,'');
-                var timestamp = Math.floor(Date.now()/1000);
-                stockSetEntity(entity,property,value,timestamp);
+                var value = vals.replace(/[,+]/g, '');
+                var timestamp = Math.floor(Date.now() / 1000);
+                stockSetEntity(entity, property, value, timestamp);
             }
         }
     });
- 
-    XE.LogF("syncognite","STOCK","Info","Starting stocks ticker poll");
+
+    XE.LogF("syncognite", "STOCK", "Info", "Starting stocks ticker poll");
     ticker.start();
 }
 

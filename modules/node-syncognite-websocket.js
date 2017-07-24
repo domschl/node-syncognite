@@ -9,9 +9,9 @@ var MDB = require('./node-syncognite-mongo.js');
 var wss;
 var wsclients = [];
 
-var WebSock = function() {};
+var WebSock = function () {};
 
-WebSock.prototype.init = function(md) {
+WebSock.prototype.init = function (md) {
     wss = new WebSocketServer({
         server: EWeb.getWebServer()
     });
@@ -29,7 +29,7 @@ function wssConnection(ws) {
     });
     XE.Log("Websockets", "Verbose", 'client connected: ' + wsclient_uuid);
 
-    ws.on('message', function(message) {
+    ws.on('message', function (message) {
         for (var i = 0; i < wsclients.length; i++) {
             if (wsclients[i].id == wsclient_uuid) {
                 obj = JSON.parse(message);
@@ -71,7 +71,7 @@ function wssConnection(ws) {
                         MDB.db().collection(MDB.lc()).find(searchcrt,
                             //{'Name': { $regex: obj['Name']}, 'Level': { $regex: obj['Level']}, 'Topic': { $regex: obj['Topic']}}
                             options
-                        ).toArray(function(err, msgs) {
+                        ).toArray(function (err, msgs) {
                             if (err) {
                                 CLog.console("History search yielded err!");
                             } else {
@@ -105,7 +105,7 @@ function wssConnection(ws) {
         }
     });
 
-    ws.on('close', function() {
+    ws.on('close', function () {
         for (var i = 0; i < wsclients.length; i++) {
             if (wsclients[i].id == wsclient_uuid) {
                 XE.Log("Websockets", "Verbose", 'client disconnected: ' + wsclient_uuid);
@@ -116,11 +116,11 @@ function wssConnection(ws) {
 }
 
 
-WebSock.prototype.pub = function() {
+WebSock.prototype.pub = function () {
     return;
 }
 
-WebSock.prototype.entityevent = function(msg) {
+WebSock.prototype.entityevent = function (msg) {
     for (var i = 0; i < wsclients.length; i++) {
         if (wsclients[i].Init == 0) continue;
         try {
@@ -148,7 +148,7 @@ WebSock.prototype.entityevent = function(msg) {
     }
 }
 
-WebSock.prototype.logevent = function(msg) {
+WebSock.prototype.logevent = function (msg) {
     for (var i = 0; i < wsclients.length; i++) {
         if (wsclients[i].Init == 0) continue;
         try {

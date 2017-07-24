@@ -6,43 +6,43 @@ var zmqRegEventCmdClients;
 var zmqPubClients;
 var zmqEventCmdClients;
 
-var Zmq = function() {};
+var Zmq = function () {};
 
-Zmq.prototype.init = function(md) {
-  zmqRegEventCmdClients = zmq.socket("rep");
-  zmqPubClients = zmq.socket("pub");
-  zmqEventCmdClients = {};
+Zmq.prototype.init = function (md) {
+    zmqRegEventCmdClients = zmq.socket("rep");
+    zmqPubClients = zmq.socket("pub");
+    zmqEventCmdClients = {};
 
-  zmqPubClients.bind("tcp://*:"+md['ZmqPubSocket'].toString(), function(error) {
-      if (error) {
-          CLog.console("Failed to bind zmqPubClients socket: " + error.message);
-          process.exit(0);
-      } else {
-          CLog.console("zmqPub-Server listening on port "+md['ZmqPubSocket'].toString());
-      }
-  });
-  zmqRegEventCmdClients.bind("tcp://*:"+md['ZmqReqSocket'].toString(), function(error) {
-      if (error) {
-          CLog.console("Failed to bind zmqRegEventCmdClients socket: " + error.message);
-          process.exit(0);
-      } else {
-          CLog.console("zmqEventCmd-Server listening on port "+md['ZmqReqSocket'].toString());
-      }
-  });
-  zmqRegEventCmdClients.on("message", zmqReqEventMessage);
+    zmqPubClients.bind("tcp://*:" + md['ZmqPubSocket'].toString(), function (error) {
+        if (error) {
+            CLog.console("Failed to bind zmqPubClients socket: " + error.message);
+            process.exit(0);
+        } else {
+            CLog.console("zmqPub-Server listening on port " + md['ZmqPubSocket'].toString());
+        }
+    });
+    zmqRegEventCmdClients.bind("tcp://*:" + md['ZmqReqSocket'].toString(), function (error) {
+        if (error) {
+            CLog.console("Failed to bind zmqRegEventCmdClients socket: " + error.message);
+            process.exit(0);
+        } else {
+            CLog.console("zmqEventCmd-Server listening on port " + md['ZmqReqSocket'].toString());
+        }
+    });
+    zmqRegEventCmdClients.on("message", zmqReqEventMessage);
 }
 
 function zmqReqEventMessage(message) {
     CLog.console(message)
     var msg = JSON.parse(message)
     if (msg["MsgType"] == "RegisterEventCommander") {
-        XE.Log("ZeroMQ","Info","Received registration from EventCommander " + msg["Name"] + " at: "+msg["EventAddress"])
+        XE.Log("ZeroMQ", "Info", "Received registration from EventCommander " + msg["Name"] + " at: " + msg["EventAddress"])
         p = zmqEventCmdClients[msg["Name"]]
         if (p == undefined) {
-            XE.Log("ZeroMQ","Verbose",msg["Name"] + " first registration")
+            XE.Log("ZeroMQ", "Verbose", msg["Name"] + " first registration")
             zmqEventCmdClients[msg["Name"]] = new Object();
         } else {
-            XE.Log("ZeroMQ","Verbose",msg["Name"] + " re-registration")
+            XE.Log("ZeroMQ", "Verbose", msg["Name"] + " re-registration")
             zmqEventCmdClients[msg["Name"]].zmqEventCmdClients.close()
         }
         zmqEventCmdClients[msg["Name"]].address = msg["EventAddress"]
@@ -56,7 +56,7 @@ function zmqReqEventMessage(message) {
     }
 }
 
-Zmq.prototype.pub = function() {
+Zmq.prototype.pub = function () {
     return zmqPubClients;
 }
 

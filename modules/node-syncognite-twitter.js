@@ -7,19 +7,25 @@ var TW = require('twitter');
 var SENTI = require('sentiment');
 
 function twitterSetEntity(entity, property, val, timestamp) {
-    var msg= {MsgType:"EntityMsg", Entity: entity, Property: property, Value: val, Time: timestamp};
+    var msg = {
+        MsgType: "EntityMsg",
+        Entity: entity,
+        Property: property,
+        Value: val,
+        Time: timestamp
+    };
     XE.ent(msg);
 }
 
-var Twitter = function() {};
+var Twitter = function () {};
 
 function isContained(text, token) {
-    var textb=" "+text+" ";
-    var seps=" #\\.\\,;:\\-\"\\(\\)";
-    var sr1="["+seps+"]";
-    var searchreg=sr1+token+sr1;
-    var re = new RegExp(searchreg,"i");
-    if (textb.search(searchreg)!= (-1)) {
+    var textb = " " + text + " ";
+    var seps = " #\\.\\,;:\\-\"\\(\\)";
+    var sr1 = "[" + seps + "]";
+    var searchreg = sr1 + token + sr1;
+    var re = new RegExp(searchreg, "i");
+    if (textb.search(searchreg) != (-1)) {
         //console.log(text+": "+token+" <"+searchreg+"> -> true");
         return true;
     } else {
@@ -29,56 +35,58 @@ function isContained(text, token) {
 }
 
 
-Twitter.prototype.init = function(md) {
+Twitter.prototype.init = function (md) {
     var client = new TW({
         consumer_key: md['consumer_key'],
         consumer_secret: md['consumer_secret'],
         access_token_key: md['access_token_key'],
         access_token_secret: md['access_token_secret']
     });
-    var topics=md['topics'];
-    var tracker="";
+    var topics = md['topics'];
+    var tracker = "";
 
     for (var ent in topics) {
-        var topic=topics[ent];
+        var topic = topics[ent];
         for (var kwin in topic) {
             tracker = tracker + topic[kwin] + ", ";
         }
     }
-    
-    var stream = client.stream('statuses/filter', {track: tracker});
-    stream.on('data', function(event) {
-        var property='tweet';
-        var value=event.text;
-        var timestamp=Date.now()/1000.0;
+
+    var stream = client.stream('statuses/filter', {
+        track: tracker
+    });
+    stream.on('data', function (event) {
+        var property = 'tweet';
+        var value = event.text;
+        var timestamp = Date.now() / 1000.0;
         for (var entity in topics) {
-            var topiclist=topics[entity];
+            var topiclist = topics[entity];
             for (var tin in topiclist) {
-                var tl=topiclist[tin].split(" ");
-                var isin=true;
+                var tl = topiclist[tin].split(" ");
+                var isin = true;
                 for (var tlin in tl) {
-                    var kw=tl[tlin].toLowerCase();
-                    var twt=event.text.toLowerCase();
-                    if (!isContained(twt,kw)) {
-                        isin=false;
+                    var kw = tl[tlin].toLowerCase();
+                    var twt = event.text.toLowerCase();
+                    if (!isContained(twt, kw)) {
+                        isin = false;
                     }
                 }
-                if (isin == true) {                    
-                    twitterSetEntity(entity,property,value,timestamp);
-                    var se=SENTI(event.text);
-                    var property='sentiment';
+                if (isin == true) {
+                    twitterSetEntity(entity, property, value, timestamp);
+                    var se = SENTI(event.text);
+                    var property = 'sentiment';
                     // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room'], words: [], positive: [], negative: [] }
-                    var value=se['comparative'];
-                    if (Math.abs(value)>0.01) {
-                        twitterSetEntity(entity,property,value,timestamp);
+                    var value = se['comparative'];
+                    if (Math.abs(value) > 0.01) {
+                        twitterSetEntity(entity, property, value, timestamp);
                     }
                 }
             }
-        }   
+        }
     });
-    
-    stream.on('error', function(error) {
-        XE.LogF("syncognite","Twitter","Error","Twitter stream error: "+error.message);
+
+    stream.on('error', function (error) {
+        XE.LogF("syncognite", "Twitter", "Error", "Twitter stream error: " + error.message);
         // throw error;
     });
     /*
@@ -97,8 +105,8 @@ Twitter.prototype.init = function(md) {
         });
     });
     */
- 
-    XE.LogF("syncognite","Twitter","Info","Starting twitter stream");
+
+    XE.LogF("syncognite", "Twitter", "Info", "Starting twitter stream");
 }
 
 module.exports = new Twitter();
