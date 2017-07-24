@@ -9,17 +9,21 @@ node-syncognite is a Node JS based service that gathers real-time data from home
 * encoders for sensor-values
 * generalized seq2seq module for event-translation
 
-## Prerequisites
-### Node
+# Prerequisites
+## Node
 ```bash
 npm install  # installs: mongodb mqtt express ws node-uuid zmq lyql twitter sentiment
 ```
-### Backends
-#### Mandatory
+## Backends
+### Mandatory
 ```bash
 mongodb zeromq
 ```
-#### Optional
+### Optional
 ```bash
 FHEM
 ```
+# Configuration
+* Copy `node-syncognite.json.default` to `node-syncognite.json`
+
+Edit and enable or disable sub-modules as needed. Some of the modules might require credentials, certificates or user configuration.
