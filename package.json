@@ -1,0 +1,30 @@
+{
+  "name": "node-syncognite",
+  "version": "0.1.0",
+  "description": "An event broker between different platforms and neural architectures",
+  "main": "node-syncognite.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/domschl/node-syncognite.git"
+  },
+  "author": "Dominik Schlösser",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/domschl/node-syncognite/issues"
+  },
+  "homepage": "https://github.com/domschl/node-syncognite#readme",
+  "dependencies": {
+    "express": "^4.15.3",
+    "lyql": "^0.1.1",
+    "mongodb": "^2.2.30",
+    "mqtt": "^2.9.2",
+    "node-uuid": "^1.4.8",
+    "sentiment": "^4.0.0",
+    "twitter": "^1.7.1",
+    "ws": "^3.0.0",
+    "zmq": "^2.15.3"
+  }
+}
