@@ -11,9 +11,9 @@ function setup() {
     var conffile = pa.join(progdir, 'node-syncognite.json');
     console.log("syncognite 0.1");
     console.log("Starting: " + progdir + ", conf: " + conffile);
-    fs.readFile(conffile, 'utf8', function(err, data) {
+    fs.readFile(conffile, 'utf8', function (err, data) {
         if (err) {
-            return console.log("Failed to read config json file");
+            console.log("Failed to read config json file");
             return;
         }
         try {
@@ -50,7 +50,7 @@ function xEventLog(msg) {
             'Topic': msg['Topic'],
             'Msg': msg['Msg']
         }
-        MDb.db().collection(MDb.lc()).insert(dblog, function(err, recs) {
+        MDb.db().collection(MDb.lc()).insert(dblog, function (err, recs) {
             if (err) {
                 CLog.console("Inserting dblog record into mongo db failed!")
             }
@@ -83,7 +83,7 @@ function entitySetProperty(entity, property, val, timestamp) {
             'Property': property,
             'Value': val
         }
-        MDb.db().collection(MDb.ec()).insert(dbEnt, function(err, recs) {
+        MDb.db().collection(MDb.ec()).insert(dbEnt, function (err, recs) {
             if (err) {
                 CLog.console("Inserting dbent record into mongo db failed!");
             }
@@ -101,7 +101,7 @@ function entitySetProperty(entity, property, val, timestamp) {
                 Entity: entity,
                 Property: property
             }
-            MDb.db().collection(MDb.es()).insert(es, function(err, recs) {
+            MDb.db().collection(MDb.es()).insert(es, function (err, recs) {
                 if (err) {
                     CLog.console("Inserting into entityspace failed!");
                 } else {
@@ -125,24 +125,24 @@ function entitySetProperty(entity, property, val, timestamp) {
 
 function cmpEntities(e1, e2) {
     if (e1 == e2) return true;
-    var se1=e1.split('/');
-    var se2=e2.split('/');
+    var se1 = e1.split('/');
+    var se2 = e2.split('/');
     if (se1.length < se2.length) {
-        var b=se1;
-        se1=se2;
-        se2=b;
+        var b = se1;
+        se1 = se2;
+        se2 = b;
     }
-    for (i=0; i<se1.length; i++) {
-        if (se1[i]=='#') return true;
-        if (se2.length<i) return false;
-        if (se1[i]=='+') continue;
-        if (se2[i]=='+') continue;
-        if (se1[i]!==se2[i]) return false;
+    for (i = 0; i < se1.length; i++) {
+        if (se1[i] == '#') return true;
+        if (se2.length < i) return false;
+        if (se1[i] == '+') continue;
+        if (se2[i] == '+') continue;
+        if (se1[i] !== se2[i]) return false;
     }
     return true;
 }
 
-var xEventEntity = function(msg) {
+var xEventEntity = function (msg) {
     //    CLog.console("Entity: " + msg["Entity"] + " Property: " + msg["Property"] + " Value: " + msg["Value"]);
     if (entitySetProperty(msg["Entity"], msg["Property"], msg["Value"], msg["Time"]) == -1) {
         return; // Something bad happened!
@@ -157,7 +157,7 @@ var xEventEntity = function(msg) {
     }
 }
 
-var xEvent = function(message) {
+var xEvent = function (message) {
     //CLog.consoleJ(message)
 
     if ("ZeroMQ" in mods) {
@@ -176,12 +176,12 @@ var xEvent = function(message) {
     }
 }
 
-var xSubscribe = function(entity, subFunc) {
-    subscriptions[entity]=subFunc;
+var xSubscribe = function (entity, subFunc) {
+    subscriptions[entity] = subFunc;
 }
 
 
-var Log = function(topic, level, message) {
+var Log = function (topic, level, message) {
     var d = new Date();
     var ms = d.getTime() / 1000.0;
     var msg = {
@@ -196,7 +196,7 @@ var Log = function(topic, level, message) {
     xEvent(smsg);
 }
 
-var LogF = function(name, topic, level, message) {
+var LogF = function (name, topic, level, message) {
     var d = new Date();
     var ms = d.getTime() / 1000.0;
     var msg = {
