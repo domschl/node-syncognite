@@ -3,15 +3,22 @@ var https = require('https')
 var express = require('express');
 var fs = require('fs');
 
-var EWeb = function() {};
+var EWeb = function () {};
 var webserver;
 
-EWeb.prototype.init = function(md) {
+EWeb.prototype.init = function (md) {
     var webapp = express();
-    var credentials = {
-        key: fs.readFileSync(md['PrivateKey']),
-        cert: fs.readFileSync(md['Certificate'])
+    var credentials;
+    try {
+        credentials = {
+            key: fs.readFileSync(md['PrivateKey']),
+            cert: fs.readFileSync(md['Certificate'])
+        }
+    } catch (err) {
+        console.log("The 'Certs' directory needs to contain certificates as configured in 'node-syncognite.json'.");
+        throw err;
     }
+
     webserver = https.createServer(credentials, webapp);
     webserver.listen(md['WebServerPort']);
     webapp.use(express.static(md['DocumentRoot']));
@@ -21,7 +28,7 @@ EWeb.prototype.init = function(md) {
     //  });
 }
 
-EWeb.prototype.getWebServer = function() {
+EWeb.prototype.getWebServer = function () {
     return webserver;
 }
 

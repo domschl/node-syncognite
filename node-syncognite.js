@@ -13,7 +13,7 @@ function setup() {
     console.log("Starting: " + progdir + ", conf: " + conffile);
     fs.readFile(conffile, 'utf8', function (err, data) {
         if (err) {
-            console.log("Failed to read config json file");
+            console.log("Failed to read 'node-syncognite.json' configuration file. You can create one by copying 'node-syncognite.json.default'.");
             return;
         }
         try {
