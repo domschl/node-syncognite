@@ -11,10 +11,15 @@ node-syncognite is a Node JS based service that gathers real-time data from home
 
 ## Prerequisites
 ### Node
-```
-npm install mongodb mqtt express ws node-uuid zmq lyql twitter sentiment
+```bash
+npm install  # installs: mongodb mqtt express ws node-uuid zmq lyql twitter sentiment
 ```
 ### Backends
+#### Mandatory
+```bash
+mongodb zeromq
 ```
-mongodb zeromq FHEM
+#### Optional
+```bash
+FHEM
 ```
