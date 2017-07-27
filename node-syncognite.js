@@ -57,7 +57,8 @@ function xEventLog(msg) {
         })
     }
 
-    mods['WebSocket']['obj'].logevent(msg)
+    mods['WebSocket']['obj'].logevent(msg);
+    mods['Mqtt']['obj'].publish(msg);
 }
 
 
