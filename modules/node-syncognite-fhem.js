@@ -219,7 +219,7 @@ function fhemCmd(cmd, ansfunc) {
                 url: url
             })
             .on('data', function (data) {
-                XE.LogF("syncognite", "FHEM", "Info", "Chunk");
+                XE.LogF("syncognite", "FHEM", "Debug", "Chunk");
                 jsdata += data;
             })
             .on('end', function () {
