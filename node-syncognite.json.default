@@ -28,6 +28,11 @@
             "ZmqReqSocket": 5101,
             "ZmqPubSocket": 5102
         },
+        "Mqtt": {
+            "require": "./modules/node-syncognite-mqtt.js",
+            "active": true,
+            "MqttServerUrl": "mqtt://my.mqtt.server"
+        },
         "Fhem": {
             "require": "./modules/node-syncognite-fhem.js",
             "active": false,

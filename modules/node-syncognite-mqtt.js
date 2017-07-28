@@ -19,7 +19,7 @@ var Mqtt = function () {};
 var mqttclient;
 
 Mqtt.prototype.init = function (md) {
-    mqttclient = mqtt.connect(md['MqttServer']);
+    mqttclient = mqtt.connect(md['MqttServerUrl']);
 
     mqttclient.on('connect', function () {
         mqttclient.subscribe('log/#');
