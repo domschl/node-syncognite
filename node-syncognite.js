@@ -12,13 +12,14 @@ function setup() {
     console.log("syncognite 0.1");
     console.log("Starting: " + progdir + ", conf: " + conffile);
     fs.readFile(conffile, 'utf8', function (err, data) {
+        var configXK;
         if (err) {
             console.log("Failed to read 'node-syncognite.json' configuration file. You can create one by copying 'node-syncognite.json.default'.");
             return;
         }
         try {
-            var configXK = JSON.parse(data);
-        } catch (err) {
+            configXK = JSON.parse(data);
+        } catch (errv) {
             console.log("Invalid json format: " + conffile);
             return;
         }
@@ -49,12 +50,12 @@ function xEventLog(msg) {
             'Level': msg['Level'],
             'Topic': msg['Topic'],
             'Msg': msg['Msg']
-        }
+        };
         MDb.db().collection(MDb.lc()).insert(dblog, function (err, recs) {
             if (err) {
-                CLog.console("Inserting dblog record into mongo db failed!")
+                CLog.console("Inserting dblog record into mongo db failed!");
             }
-        })
+        });
     }
 
     mods['WebSocket']['obj'].logevent(msg);
@@ -85,7 +86,7 @@ function entitySetProperty(entity, property, val, timestamp) {
             'Entity': entity,
             'Property': property,
             'Value': val
-        }
+        };
         MDb.db().collection(MDb.ec()).insert(dbEnt, function (err, recs) {
             if (err) {
                 CLog.console("Inserting dbent record into mongo db failed!");
@@ -97,13 +98,13 @@ function entitySetProperty(entity, property, val, timestamp) {
 
     if (MDb.db() !== 0) {
         if (dobj == undefined) { // New entity:
-            entityStates[entity] = {}
+            entityStates[entity] = {};
         }
         if (entityStates[entity][property] == undefined) {
             var es = {
                 Entity: entity,
                 Property: property
-            }
+            };
             MDb.db().collection(MDb.es()).insert(es, function (err, recs) {
                 if (err) {
                     CLog.console("Inserting into entityspace failed!");
@@ -114,7 +115,7 @@ function entitySetProperty(entity, property, val, timestamp) {
             entityStates[entity][property] = {
                 value: val,
                 time: timestamp,
-            }
+            };
         } else {
             entityStates[entity][property]["value"] = val;
             entityStates[entity][property]["time"] = timestamp;
@@ -158,7 +159,7 @@ var xEventEntity = function (msg) {
     if ("WebSocket" in mods) {
         mods['WebSocket']['obj'].entityevent(msg);
     }
-}
+};
 
 var xEvent = function (message) {
     //CLog.consoleJ(message)
@@ -169,19 +170,19 @@ var xEvent = function (message) {
     }
 
     // Send to websocket clients
-    msg = JSON.parse(message)
+    msg = JSON.parse(message);
     if (msg["MsgType"] == "LogMsg") {
         xEventLog(msg);
     } else if (msg["MsgType"] == "EntityMsg") {
         xEventEntity(msg);
     } else {
-        Log("Websockets", "Error", "Unknown message type: " + msg["MsgType"])
+        Log("Websockets", "Error", "Unknown message type: " + msg["MsgType"]);
     }
-}
+};
 
 var xSubscribe = function (entity, subFunc) {
     subscriptions[entity] = subFunc;
-}
+};
 
 
 var Log = function (topic, level, message) {
@@ -197,7 +198,7 @@ var Log = function (topic, level, message) {
     };
     var smsg = JSON.stringify(msg);
     xEvent(smsg);
-}
+};
 
 var LogF = function (name, topic, level, message) {
     var d = new Date();
@@ -212,7 +213,7 @@ var LogF = function (name, topic, level, message) {
     };
     var smsg = JSON.stringify(msg);
     xEvent(smsg);
-}
+};
 
 module.exports = {
     x: xEvent,
@@ -221,4 +222,4 @@ module.exports = {
     ent: xEventEntity,
     Log: Log,
     LogF: LogF
-}
+};

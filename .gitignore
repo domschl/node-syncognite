@@ -43,6 +43,9 @@ node_modules/
 *~
 \#*\#
 
+# VSCode
+.vscode/
+
 node-syncognite.json
 make-local-cert.sh
 
