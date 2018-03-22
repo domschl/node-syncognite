@@ -1,29 +1,37 @@
 #!/bin/bash
 
 HOSTNAME=`hostname -f`
+DOMAINNAME=`dnsdomainname`
+CERT_FILENAME="node-syncognite"
+LOC_NAMES="/C=US/ST=CA/O=Acme, Inc."
 AUTHORITY_PRIV_KEY="path-to-private-key-of-signing-authority"
 AUTHORITY_PUB_KEY="path-to-pub-cert-of-signing-authority"
 
 if [ ! -f $AUTHORITY_PRIV_KEY ]; then
-    echo "Private key of signing authority not found, please configure."
+    echo "Private key of signing authority not found, please configure AUTHORITY_PRIV_KEY."
     exit -1
 fi
 if [ ! -f $AUTHORITY_PUB_KEY ]; then
-    echo "Public cert of signing authority not found, please configure."
+    echo "Public cert of signing authority not found, please configure AUTHORITY_PUB_KEY."
     exit -1
 fi
 
 echo "Creating private key for $HOSTNAME machine..."
-openssl genrsa -out Certs/node-syncognite-key.pem 4096
+openssl genrsa -out Certs/$CERT_FILENAME-key.pem 4096
 
 echo "Creating signing request for "
 echo "  Common name -> $HOSTNAME"
-openssl req -new -key Certs/node-syncognite-key.pem -out Certs/node-syncognite.csr -sha512 -subj "/CN=$HOSTNAME"
+openssl req -new -key Certs/$CERT_FILENAME-key.pem -out Certs/$CERT_FILENAME.csr -sha512 \
+        -subj "$LOC_NAMES/CN=$HOSTNAME" -reqexts SAN -extensions SAN \
+        -config <(cat /etc/ssl/openssl.cnf \
+                <(printf "[SAN]\nsubjectAltName=DNS:$DOMAINNAME,DNS:$HOSTNAME"))
 
 echo "Signing the request with private key:"
-openssl x509 -req -in Certs/node-syncognite.csr -CA $AUTHORITY_PUB_KEY -CAkey $AUTHORITY_PRIV_KEY -CAcreateserial -out Certs/node-syncognite-pub.pem -days 3650 -sha512
+openssl x509 -req -in Certs/$CERT_FILENAME.csr -CA $AUTHORITY_PUB_KEY \
+        -CAkey $AUTHORITY_PRIV_KEY -CAcreateserial -out Certs/$CERT_FILENAME-pub.pem \
+        -days 3650 -sha512
 
 echo "Removing signing request..."
-rm Certs/node-syncognite.csr
+rm Certs/$CERT_FILENAME.csr
 
 echo "Done."

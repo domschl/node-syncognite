@@ -58,7 +58,9 @@ function xEventLog(msg) {
     }
 
     mods['WebSocket']['obj'].logevent(msg);
-    mods['Mqtt']['obj'].publish(msg);
+    if ("Mqtt" in mods) {
+        mods['Mqtt']['obj'].publish(msg);
+    }
 }
 
 
