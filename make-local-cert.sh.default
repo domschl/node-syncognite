@@ -4,11 +4,11 @@ HOSTNAME=`hostname -f`
 AUTHORITY_PRIV_KEY="~/Certs/Dosc.net/Root\ authority/Private\ key/ca-key.pem"
 AUTHORITY_PUB_KEY="~/Certs/Dosc.net/Root\ authority/ca-root.pem"
 
-echo "Creating private key for this machine..."
+echo "Creating private key for $HOSTNAME machine..."
 openssl genrsa -out Certs/node-syncognite-key.pem 4096
 
 echo "Creating signing request, enter fully qualified hostname for "
-echo "  Common name:"
+echo "  Common name -> $HOSTNAME"
 openssl req -new -key Certs/node-syncognite-key.pem -out Certs/node-syncognite.csr -sha512
 
 echo "Signing the request with private key:"

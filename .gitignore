@@ -44,6 +44,7 @@ node_modules/
 \#*\#
 
 node-syncognite.json
+make-local-cert.sh
 
 .directory
 
