@@ -26,6 +26,9 @@ openssl req -new -key Certs/$CERT_FILENAME-key.pem -out Certs/$CERT_FILENAME.csr
         -config <(cat /etc/ssl/openssl.cnf \
                 <(printf "[SAN]\nsubjectAltName=DNS:$DOMAINNAME,DNS:$HOSTNAME"))
 
+echo "CSR Request:"
+openssl req -in Certs/$CERT_FILENAME.csr -text -noout
+
 echo "Signing the request with private key:"
 openssl x509 -req -in Certs/$CERT_FILENAME.csr -CA $AUTHORITY_PUB_KEY \
         -CAkey $AUTHORITY_PRIV_KEY -CAcreateserial -out Certs/$CERT_FILENAME-pub.pem \
