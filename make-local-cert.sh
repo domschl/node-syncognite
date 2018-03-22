@@ -1,0 +1,20 @@
+#!/bin/bash
+
+HOSTNAME=`hostname -f`
+AUTHORITY_PRIV_KEY="~/Certs/Dosc.net/Root\ authority/Private\ key/ca-key.pem"
+AUTHORITY_PUB_KEY="~/Certs/Dosc.net/Root\ authority/ca-root.pem"
+
+echo "Creating private key for this machine..."
+openssl genrsa -out Certs/node-syncognite-key.pem 4096
+
+echo "Creating signing request, enter fully qualified hostname for "
+echo "  Common name:"
+openssl req -new -key Certs/node-syncognite-key.pem -out Certs/node-syncognite.csr -sha512
+
+echo "Signing the request with private key:"
+openssl x509 -req -in Certs/node-syncognite.csr -CA $AUTHORITY_PUB_KEY -CAkey $AUTHORITY_PRIV_KEY -CAcreateserial -out Certs/node-syncognite-pub.pem -days 3650 -sha512
+
+echo "Removing signing request..."
+rm Certs/node-syncognite.csr
+
+echo "Done."
