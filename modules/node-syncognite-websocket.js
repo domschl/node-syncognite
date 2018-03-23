@@ -75,18 +75,18 @@ function wssConnection(ws) {
                             if (errv) {
                                 CLog.console("History search yielded err!");
                             } else {
-                                m2 = {
+                                var m2 = {
                                     "MsgType": "LogMsgList",
                                     "Msgs": []
                                 };
-                                for (i = msgs.length - 1; i >= 0; i--) {
+                                for (var j = msgs.length - 1; j >= 0; j--) {
                                     var msg = {
-                                        Date: msgs[i].Timestamp,
+                                        Date: msgs[j].Timestamp,
                                         MsgType: "LogMsg",
-                                        Name: msgs[i].Name,
-                                        Topic: msgs[i].Topic,
-                                        Level: msgs[i].Level,
-                                        Msg: msgs[i].Msg,
+                                        Name: msgs[j].Name,
+                                        Topic: msgs[j].Topic,
+                                        Level: msgs[j].Level,
+                                        Msg: msgs[j].Msg,
                                     };
                                     m2.Msgs.push(msg);
                                 }
