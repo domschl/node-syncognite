@@ -45,28 +45,28 @@ var Stock = function () {};
 Stock.prototype.init = function (md) {
     for (var key in stockcmds) {
         if (stockcmds.hasOwnProperty(key)) {
-            val = stockcmds[key];
-            invstockcmds[val] = key;
+            var valsc = stockcmds[key];
+            invstockcmds[valsc] = key;
         }
     }
-    var tickertable = md['stocks'];
+    var tickertable = md.stocks;
     var tickerlist = [];
     var invtickertable = {};
     for (var name in tickertable) {
-        var val = tickertable[name];
-        tickerlist.push(val);
-        invtickertable[val] = name;
+        var vals = tickertable[name];
+        tickerlist.push(vals);
+        invtickertable[vals] = name;
     }
 
     var options = {};
-    options['Stocks'] = tickerlist;
-    options['Parameters'] = [];
+    options.Stocks = tickerlist;
+    options.Parameters = [];
 
     var im = function (s) {
-        return invstockcmds[s]
+        return invstockcmds[s];
     };
 
-    options['Parameters'] = md['parameters'].map(im);
+    options.Parameters = md.parameters.map(im);
 
     var ticker = new LYQL(options, function (data) {
         for (var ent in data) {
@@ -83,7 +83,7 @@ Stock.prototype.init = function (md) {
 
     XE.LogF("syncognite", "STOCK", "Info", "Starting stocks ticker poll");
     ticker.start();
-}
+};
 
 
 module.exports = new Stock();

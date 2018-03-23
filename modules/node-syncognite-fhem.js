@@ -36,7 +36,7 @@ var ignoreProperties = {
 };
 var ignoreEntityStates = {
     MacXBMC: 0,
-}
+};
 
 function isIgnore(entity, Property, val) {
     if (ignoreProperties[Property] != undefined) return true;
@@ -65,14 +65,14 @@ function fhemSubscriptions(msg) {
     CLog.console("Got sub-msg: " + msg);
     for (var i in fhemDevList) {
         var fdev = fhemDevList[i];
-        if (XE.cmp(fdev['address'], msg['Entity'])) {
-            XE.LogF("syncognite", "FHEM", "Debug", "cmp: " + fdev['address'] + " " + msg['Entity']);
-            XE.LogF("syncognite", "FHEM", "Info", "Got something! " + fdev['fhemDevName'] + ": " + msg['Property'] + " " + msg['Value']);
+        if (XE.cmp(fdev.address, msg.Entity)) {
+            XE.LogF("syncognite", "FHEM", "Debug", "cmp: " + fdev.address + " " + msg.Entity);
+            XE.LogF("syncognite", "FHEM", "Info", "Got something! " + fdev.fhemDevName + ": " + msg.Property + " " + msg.Value);
             var cmd = '';
-            if (msg['Property'] == 'state') {
-                cmd = "set " + fdev['fhemDevName'] + ' ' + msg['Value'];
+            if (msg.Property == 'state') {
+                cmd = "set " + fdev.fhemDevName + ' ' + msg.Value;
             } else {
-                cmd = "set " + fdev['fhemDevName'] + ' ' + msg['Property'] + " " + msg['Value'];
+                cmd = "set " + fdev.fhemDevName + ' ' + msg.Property + " " + msg.Value;
             }
             fhemCmd(cmd, undefined);
         }
@@ -104,15 +104,15 @@ function fhemLongPoll(fhemAddr) {
 
     var query = "/fhem.pl?XHR=1" +
         "&inform=type=status;filter=" + filter + ";since=" + since + ";fmt=JSON" +
-        "&timestamp=" + Date.now()
+        "&timestamp=" + Date.now();
 
     var url = encodeURI(address + query);
     // console.log('starting longpoll: ' + url);
     // console.log('---------------------------')
     pollActive = 1;
-    var curentity = ""
-    var curProperty = ""
-    var currval = ""
+    var curentity = "";
+    var curProperty = "";
+    var currval = "";
     var st_ignorehtml = 0;
     try {
         connection.request.get({ // XXX: reconnect?
@@ -137,7 +137,7 @@ function fhemLongPoll(fhemAddr) {
                         try {
                             obj = JSON.parse(evs[i]);
                         } catch (e) {
-                            olddata = evs[i]
+                            olddata = evs[i];
                             break;
                         }
                         if (obj.length != 3) {
@@ -148,18 +148,18 @@ function fhemLongPoll(fhemAddr) {
                         if (dd.length == 1) { // just HTML garbage, was just a state in earlier versions
                             st_ignorehtml += 1;
                         } else if (dd.length == 2) {
-                            curentity = dd[0]
-                            curProperty = dd[1]
-                            curval = obj[1]
+                            curentity = dd[0];
+                            curProperty = dd[1];
+                            curval = obj[1];
                         } else if (dd.length == 3) {
                             if (curentity != dd[0] || curProperty != dd[1] || dd[2] != "ts") {
-                                XE.LogF("syncognite", "FHEM", "Error", "Unexpected timestamp record: " + obj[0])
+                                XE.LogF("syncognite", "FHEM", "Error", "Unexpected timestamp record: " + obj[0]);
                                 break;
                             }
                             fhemSetEntity(curentity, curProperty, curval, Date.parse(obj[1]) / 1000.0);
-                            curentity = ""
-                            curProperty = ""
-                            currval = ""
+                            curentity = "";
+                            curProperty = "";
+                            currval = "";
                         } else {
                             XE.LogF("syncognite", "FHEM", "Error", "Entity: " + obj[0] + " record length unexpected: " + dd.length);
                             break;
@@ -173,8 +173,8 @@ function fhemLongPoll(fhemAddr) {
                 setTimeout(fhemLongPoll, reconnectIntervalEnd);
             })
             .on('response', function (response) {
-                if (response.headers && response.headers['x-fhem-csrftoken'])
-                    csrfToken = response.headers['x-fhem-csrftoken'];
+                if (response.headers && response.headers.x - fhem - csrftoken)
+                    csrfToken = response.headers.x - fhem - csrftoken;
                 else
                     csrfToken = '';
                 XE.LogF("suncognite", "FHEM", "Info", "csrfToken:" + csrfToken);
@@ -191,7 +191,7 @@ function fhemLongPoll(fhemAddr) {
                 pollActive = 0;
                 isConnected = 0;
                 setTimeout(fhemLongPoll, reconnectIntervalError);
-            })
+            });
     } catch (e) {
         XE.LogF("syncognite", "FHEM", "Error", "FHEM longpoll failure: " + e.message);
         return;
@@ -206,7 +206,7 @@ function fhemCmd(cmd, ansfunc) {
     };
     jsdata = '';
 
-    var query = "/fhem.pl?XHR=1" + "&cmd=" + cmd
+    var query = "/fhem.pl?XHR=1" + "&cmd=" + cmd;
 
     if (csrfToken !== '') {
         query += '&fwcsrf=' + csrfToken;
@@ -224,8 +224,9 @@ function fhemCmd(cmd, ansfunc) {
             })
             .on('end', function () {
                 XE.LogF("syncognite", "FHEM", "Info", "End reached");
+                var fhemAns;
                 try {
-                    var fhemAns = JSON.parse(jsdata);
+                    fhemAns = JSON.parse(jsdata);
                 } catch (err) {
                     console.log("Invalid json format in jsonlist2: " + err.message);
                     return;
@@ -236,7 +237,7 @@ function fhemCmd(cmd, ansfunc) {
                 if (hasError == 0) {
                     XE.LogF("syncognite", "FHEM", "Error", "Error: " + err);
                 }
-            })
+            });
     } catch (e) {
         XE.LogF("syncognite", "FHEM", "Error", "FHEM request.get: " + e.message);
     }
@@ -244,15 +245,15 @@ function fhemCmd(cmd, ansfunc) {
 
 
 function addFhemDevs(fhemDevs) {
-    for (var i in fhemDevs['Results']) {
-        if (fhemDevs['Results'][i]['Attributes']['nsname'] !== undefined) {
-            XE.LogF("syncognite", "FHEM", "Info", "Device: " + fhemDevs['Results'][i]['Name'] + ' -> ' + fhemDevs['Results'][i]['Attributes']['nsname']);
-            sl = fhemDevs['Results'][i]['Attributes']['nsaddr'].split('|');
+    for (var i in fhemDevs.Results) {
+        if (fhemDevs.Results[i].Attributes.nsname !== undefined) {
+            XE.LogF("syncognite", "FHEM", "Info", "Device: " + fhemDevs.Results[i].Name + ' -> ' + fhemDevs.Results[i].Attributes.nsname);
+            sl = fhemDevs.Results[i].Attributes.nsaddr.split('|');
             for (var j in sl) {
                 XE.sub(sl[j], fhemSubscriptions);
                 var fdev = {};
-                fdev['fhemDevName'] = fhemDevs['Results'][i]['Name'];
-                fdev['address'] = sl[j];
+                fdev.fhemDevName = fhemDevs.Results[i].Name;
+                fdev.address = sl[j];
                 XE.LogF("syncognite", "FHEM", "Debug", "Sub: " + sl[j]);
                 fhemDevList.push(fdev);
             }
@@ -274,7 +275,7 @@ function fhemInitialReadallOld() {
     jsdata = '';
 
     var query = "/fhem.pl?XHR=1" +
-        "&cmd=jsonlist2"
+        "&cmd=jsonlist2";
 
     if (csrfToken !== '') {
         query += '&fwcsrf=' + csrfToken;
@@ -292,19 +293,20 @@ function fhemInitialReadallOld() {
             })
             .on('end', function () {
                 XE.LogF("syncognite", "FHEM", "Info", "End reached at jsonlist2 ");
+                var fhemDevs;
                 try {
-                    var fhemDevs = JSON.parse(jsdata);
+                    fhemDevs = JSON.parse(jsdata);
                 } catch (err) {
                     console.log("Invalid json format in jsonlist2: " + err.message);
                     return;
                 }
-                addFhemDevs(fhemDevs)
+                addFhemDevs(fhemDevs);
             })
             .on('error', function (err) {
                 if (hasError == 0) {
                     XE.LogF("syncognite", "FHEM", "Error", "Error: " + err);
                 }
-            })
+            });
     } catch (e) {
         XE.LogF("syncognite", "FHEM", "Error", "FHEM longpoll failure: " + e.message);
     }
@@ -314,14 +316,14 @@ function fhemInitialReadallOld() {
 var Fhem = function () {};
 
 Fhem.prototype.init = function (md) {
-    if (md['FhemAddress'].length > 0) {
-        fhemAddress = md['FhemAddress'];
+    if (md.FhemAddress.length > 0) {
+        fhemAddress = md.FhemAddress;
         XE.LogF("syncognite", "FHEM", "Info", "Starting long poll to FHEM server at " + fhemAddress);
         XE.sub("FHEM/#", fhemSubscriptions);
         CLog.console("FHEM long poll at: " + fhemAddress);
         fhemLongPoll(fhemAddress);
     }
     // CLog.console("FHEM failure");
-}
+};
 
 module.exports = new Fhem();

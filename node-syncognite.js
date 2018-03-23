@@ -25,15 +25,15 @@ function setup() {
         }
         for (var md in configXK.modules) {
             mods[md] = configXK.modules[md];
-            if (mods[md]['active']) {
-                mods[md]['obj'] = require(mods[md]['require']);
+            if (mods[md].active) {
+                mods[md].obj = require(mods[md].require);
                 if (md == "MongoDb") {
-                    MDb = mods[md]['obj'];
+                    MDb = mods[md].obj;
                 }
                 if (md == "Util") {
-                    CLog = mods[md]['obj'];
+                    CLog = mods[md].obj;
                 }
-                mods[md]['obj'].init(mods[md]);
+                mods[md].obj.init(mods[md]);
                 if (typeof CLog != "undefined") CLog.console("Loading: " + md);
             }
         }
@@ -45,11 +45,11 @@ setup();
 function xEventLog(msg) {
     if (MDb.db() !== 0) {
         dblog = { //Date, Name, Level, Topic, Msg
-            'Timestamp': msg['Date'],
-            'Name': msg['Name'],
-            'Level': msg['Level'],
-            'Topic': msg['Topic'],
-            'Msg': msg['Msg']
+            'Timestamp': msg.Date,
+            'Name': msg.Name,
+            'Level': msg.Level,
+            'Topic': msg.Topic,
+            'Msg': msg.Msg
         };
         MDb.db().collection(MDb.lc()).insert(dblog, function (err, recs) {
             if (err) {
@@ -58,9 +58,9 @@ function xEventLog(msg) {
         });
     }
 
-    mods['WebSocket']['obj'].logevent(msg);
+    mods.WebSocket.obj.logevent(msg);
     if ("Mqtt" in mods) {
-        mods['Mqtt']['obj'].publish(msg);
+        mods.Mqtt.obj.publish(msg);
     }
 }
 
@@ -71,7 +71,7 @@ function entitySetProperty(entity, property, val, timestamp) {
     if (dobj != undefined) {
         dr = dobj[property];
         if (dr != undefined) {
-            if (dr["value"] == val) {
+            if (dr.value == val) {
                 // redundant set, this was already the value - ignored!
                 return -1;
             }
@@ -117,8 +117,8 @@ function entitySetProperty(entity, property, val, timestamp) {
                 time: timestamp,
             };
         } else {
-            entityStates[entity][property]["value"] = val;
-            entityStates[entity][property]["time"] = timestamp;
+            entityStates[entity][property].value = val;
+            entityStates[entity][property].time = timestamp;
         }
     } else {
         CLog.console("Tried to write entity state, yet mongodb isn't up yet!");
@@ -147,17 +147,17 @@ function cmpEntities(e1, e2) {
 }
 
 var xEventEntity = function (msg) {
-    //    CLog.console("Entity: " + msg["Entity"] + " Property: " + msg["Property"] + " Value: " + msg["Value"]);
-    if (entitySetProperty(msg["Entity"], msg["Property"], msg["Value"], msg["Time"]) == -1) {
+    //    CLog.console("Entity: " + msg.Entity + " Property: " + msg.Property + " Value: " + msg.Value);
+    if (entitySetProperty(msg.Entity, msg.Property, msg.Value, msg.Time) == -1) {
         return; // Something bad happened!
     }
-    for (sub in subscriptions) {
-        if (cmpEntities(msg["Entity"], sub)) {
+    for (var sub in subscriptions) {
+        if (cmpEntities(msg.Entity, sub)) {
             subscriptions[sub](msg);
         }
     }
     if ("WebSocket" in mods) {
-        mods['WebSocket']['obj'].entityevent(msg);
+        mods.WebSocket.obj.entityevent(msg);
     }
 };
 
@@ -166,17 +166,17 @@ var xEvent = function (message) {
 
     if ("ZeroMQ" in mods) {
         // Send to 0mq pub socket
-        mods["ZeroMQ"]['obj'].pub().send(message);
+        mods.ZeroMQ.obj.pub().send(message);
     }
 
     // Send to websocket clients
     msg = JSON.parse(message);
-    if (msg["MsgType"] == "LogMsg") {
+    if (msg.MsgType == "LogMsg") {
         xEventLog(msg);
-    } else if (msg["MsgType"] == "EntityMsg") {
+    } else if (msg.MsgType == "EntityMsg") {
         xEventEntity(msg);
     } else {
-        Log("Websockets", "Error", "Unknown message type: " + msg["MsgType"]);
+        Log("Websockets", "Error", "Unknown message type: " + msg.MsgType);
     }
 };
 

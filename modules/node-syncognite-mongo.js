@@ -21,7 +21,7 @@ Mongo.prototype.init = function (md) {
         var options = {
             //          sort: {'Timestamp': -1},
             //          limit: 200
-        }
+        };
         var searchcrt = {};
         mongoDb.collection(mongoEntitySpace).find(searchcrt, options).toArray(function (err, ents) {
             if (err) {
@@ -31,7 +31,7 @@ Mongo.prototype.init = function (md) {
                     var ent = ents[i];
                     var dobj = entityStates[ent.Entity];
                     if (dobj == undefined) { // New entity:
-                        entityStates[ent.Entity] = {}
+                        entityStates[ent.Entity] = {};
                     }
                     if (entityStates[ent.Entity][ent.Property] == undefined) {
                         // CLog.console("Remembering: " + ent.Entity + "/" + ent.Property);
@@ -43,22 +43,22 @@ Mongo.prototype.init = function (md) {
             }
         });
     });
-}
+};
 
 Mongo.prototype.db = function () {
     return mongoDb;
-}
+};
 
 Mongo.prototype.lc = function () {
     return mongoLogCollection;
-}
+};
 
 Mongo.prototype.ec = function () {
     return mongoEntityCollection;
-}
+};
 
 Mongo.prototype.es = function () {
     return mongoEntitySpace;
-}
+};
 
 module.exports = new Mongo();
