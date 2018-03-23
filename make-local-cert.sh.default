@@ -3,7 +3,11 @@
 HOSTNAME=`hostname -f`
 DOMAINNAME=`dnsdomainname`
 CERT_FILENAME="node-syncognite"
-LOC_NAMES="/C=US/ST=CA/O=Acme, Inc."
+COUNTRY="US"
+PROVINCE="CA"
+CITY="San Jose"
+ORGANISATION="Acme Inc"
+LOC_NAMES="/C=$COUNTRY/ST=$PROVINCE/O=$ORGANISATION"
 AUTHORITY_PRIV_KEY="path-to-private-key-of-signing-authority"
 AUTHORITY_PUB_KEY="path-to-pub-cert-of-signing-authority"
 
@@ -23,8 +27,7 @@ echo "Creating signing request for "
 echo "  Common name -> $HOSTNAME"
 openssl req -new -key Certs/$CERT_FILENAME-key.pem -out Certs/$CERT_FILENAME.csr -sha512 \
         -subj "$LOC_NAMES/CN=$HOSTNAME" -reqexts SAN -extensions SAN \
-        -config <(cat /etc/ssl/openssl.cnf \
-                <(printf "[SAN]\nsubjectAltName=DNS:$DOMAINNAME,DNS:$HOSTNAME"))
+        -config <(printf "[req]\ndefault_bits=2048\ndistinguished_name=req_distinguished_name\n[req_distinguished_name]\ncountryName=$COUNTRY\nstateOrProvinceName=$PROVINCE\nreq_extensions=SAN\nextensions=SAN\nlocalityName=$CITY\norganizationName=$ORGANISATION\n[SAN]\nsubjectAltName=DNS:$DOMAINNAME,DNS:$HOSTNAME,DNS:localhost")
 
 echo "CSR Request:"
 openssl req -in Certs/$CERT_FILENAME.csr -text -noout
