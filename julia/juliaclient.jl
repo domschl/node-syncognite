@@ -9,7 +9,7 @@ struct ZmqState
     repcmdsock::Socket
 end
 
-function registerEventCommander(name::String, server::String, listeningport::Int64 = 5481) 
+function registerEventCommander(name::String, server::String, listeningport::Int64=5481) 
     ctx = Context()
     logpubsock = Socket(ctx, PUB)
     reqsock = Socket(ctx, REQ)
@@ -64,5 +64,5 @@ end
 
 zst = registerEventCommander("julia", "tcp://localhost:5101")
 Log(zst, "Warning", "Lib-tester", "Sending this from Julia!")
-Entity(zst, "CPU", "Power", 50)
+Entity(zst, "CPU", "Power", "50")
 unregisterEventCommander(zst)
