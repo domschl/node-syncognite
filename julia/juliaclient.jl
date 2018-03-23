@@ -1,3 +1,5 @@
+module Syncognite
+
 using ZMQ
 using JSON
 
@@ -9,7 +11,7 @@ struct ZmqState
     repcmdsock::Socket
 end
 
-function registerEventCommander(name::String, server::String, listeningport::Int64=5481) 
+function registerEventCommander(name::String, server::String, listeningport::Int64 = 5481) 
     ctx = Context()
     logpubsock = Socket(ctx, PUB)
     reqsock = Socket(ctx, REQ)
@@ -62,7 +64,9 @@ function Entity(zst::ZmqState, entity::String, property::String, value::String)
     ZMQ.send(zst.logpubsock, Message(js))
 end
 
-zst = registerEventCommander("julia", "tcp://localhost:5101")
-Log(zst, "Warning", "Lib-tester", "Sending this from Julia!")
-Entity(zst, "CPU", "Power", "50")
-unregisterEventCommander(zst)
+end  # module Syncognite
+
+zst = Syncognite.registerEventCommander("julia", "tcp://localhost:5101")
+Syncognite.Log(zst, "Warning", "Lib-tester", "Sending this from Julia!")
+Syncognite.Entity(zst, "CPU", "Power", "50")
+Syncognite.unregisterEventCommander(zst)
