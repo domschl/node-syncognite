@@ -46,10 +46,10 @@ Mqtt.prototype.publish = function (msg) {
     'Topic': msg['Topic'],
     'Msg': msg['Msg']
     */
-    if (msg['Topic'] === 'pricerealtime' && msg['Name'] === 'Apple') {
-        mqttclient.publish('mw/' + msg['Name'] + '/' + msg['Topic'], msg['Msg']);
+    // if (msg['Topic'] === 'pricerealtime' && msg['Name'] === 'Apple') {
+    mqttclient.publish('mw/' + msg['Name'] + '/' + msg['Topic'], msg['Msg']);
 
-    }
+    // }
 }
 
 module.exports = new Mqtt();
