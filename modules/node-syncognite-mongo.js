@@ -16,7 +16,7 @@ Mongo.prototype.init = function (md) {
             CLog.console("Failed to connect to mongodb database");
             throw err;
         }
-        mongoDb = db;
+        mongoDb = db.db('LogArchive');
         CLog.console("Mongodb open");
         var options = {
             //          sort: {'Timestamp': -1},

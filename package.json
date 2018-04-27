@@ -18,14 +18,15 @@
   "homepage": "https://github.com/domschl/node-syncognite#readme",
   "dependencies": {
     "express": "^4.16.3",
+    "hoek": "^5.0.3",
     "lyql": "^0.1.1",
-    "mongodb": "^2.2.35",
-    "mqtt": "^2.16.0",
-    "node-uuid": "^1.4.8",
-    "pem": "^1.9.7",
-    "sentiment": "^4.2.0",
+    "mongodb": "^3.0.7",
+    "mqtt": "^2.17.0",
+    "pem": "^1.12.5",
+    "sentiment": "^5.0.0",
     "twitter": "^1.7.1",
-    "ws": "^3.3.3",
-    "zmq": "^2.15.3"
+    "uuid": "^3.2.1",
+    "ws": "^5.1.1",
+    "zeromq": "^4.6.0"
   }
 }

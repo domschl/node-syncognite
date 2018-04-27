@@ -1,4 +1,4 @@
-var zmq = require("zmq");
+var zmq = require("zeromq");
 var CLog = require('./node-syncognite-util.js');
 var XE = require('../node-syncognite.js');
 

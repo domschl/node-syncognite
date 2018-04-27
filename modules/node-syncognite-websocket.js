@@ -1,5 +1,5 @@
 var WebSocketServer = require('ws').Server;
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 var CLog = require('./node-syncognite-util.js');
 var EWeb = require('./node-syncognite-express.js');

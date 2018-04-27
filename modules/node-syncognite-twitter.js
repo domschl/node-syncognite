@@ -4,7 +4,8 @@ var XE = require('../node-syncognite.js');
 // https://www.npmjs.com/package/twitter
 var TW = require('twitter');
 // https://github.com/thisandagain/sentiment
-var SENTI = require('sentiment');
+var Sentiment = require('sentiment');
+var sentiment = new Sentiment();
 
 function twitterSetEntity(entity, property, val, timestamp) {
     var msg = {
@@ -73,12 +74,12 @@ Twitter.prototype.init = function (md) {
                 }
                 if (isin == true) {
                     twitterSetEntity(entity, property, value, timestamp);
-                    var se = SENTI(event.text);
-                    var propertys = 'sentiment';
+                    var se = sentiment.analyze(event.text);
+                    var properties = 'sentiment';
                     // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room, words: [], positive: [], negative: [] }
                     var values = se.comparative;
                     if (Math.abs(value) > 0.01) {
-                        twitterSetEntity(entity, propertys, values, timestamp);
+                        twitterSetEntity(entity, properties, values, timestamp);
                     }
                 }
             }
