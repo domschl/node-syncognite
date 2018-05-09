@@ -19,7 +19,8 @@ var Mqtt = function () {};
 var mqttclient;
 
 Mqtt.prototype.init = function (md) {
-    mqttclient = mqtt.connect(md['MqttServerUrl']);
+    mqttclient = mqtt.connect(md.MqttServerUrl);
+    CLog.console("Connecting to MQTT server at " + md.MqttServerUrl);
 
     mqttclient.on('connect', function () {
         mqttclient.subscribe('log/#');
@@ -29,27 +30,27 @@ Mqtt.prototype.init = function (md) {
         // message is Buffer 
         try {
             var msg = JSON.parse(message);
-            XE.LogF("MQTT", msg["topic"], msg["severity"], msg["msg"]);
+            XE.LogF("MQTT", msg.topic, msg.severity, msg.msg);
         } catch (err) {
             XE.LogF("MQTT", "Format", "Error", message.toString());
         }
         // kills it: client.end();
     });
     XE.LogF("syncognite", "Mqtt", "Info", "Starting mqtt stream");
-}
+};
 
 Mqtt.prototype.publish = function (msg) {
     /*
-    'Timestamp': msg['Date'],
-    'Name': msg['Name'],
-    'Level': msg['Level'],
-    'Topic': msg['Topic'],
-    'Msg': msg['Msg']
+    'Timestamp': msg.Date,
+    'Name': msg.Name,
+    'Level': msg.Level,
+    'Topic': msg.Topic,
+    'Msg': msg.Msg
     */
-    //if (msg['Topic'] === 'pricerealtime' && msg['Name'] === 'Apple') {
-        mqttclient.publish('mw/' + msg['Name'] + '/' + msg['Topic'], msg['Msg']);
+    // if (msg.Topic === 'pricerealtime' && msg.Name === 'Apple') {
+    mqttclient.publish('mw/' + msg.Name + '/' + msg.Topic, msg.Msg);
 
-    //}
-}
+    // }
+};
 
 module.exports = new Mqtt();

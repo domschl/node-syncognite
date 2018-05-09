@@ -4,7 +4,8 @@ var XE = require('../node-syncognite.js');
 // https://www.npmjs.com/package/twitter
 var TW = require('twitter');
 // https://github.com/thisandagain/sentiment
-var SENTI = require('sentiment');
+var Sentiment = require('sentiment');
+var sentiment = new Sentiment();
 
 function twitterSetEntity(entity, property, val, timestamp) {
     var msg = {
@@ -37,12 +38,12 @@ function isContained(text, token) {
 
 Twitter.prototype.init = function (md) {
     var client = new TW({
-        consumer_key: md['consumer_key'],
-        consumer_secret: md['consumer_secret'],
-        access_token_key: md['access_token_key'],
-        access_token_secret: md['access_token_secret']
+        consumer_key: md.consumer_key,
+        consumer_secret: md.consumer_secret,
+        access_token_key: md.access_token_key,
+        access_token_secret: md.access_token_secret
     });
-    var topics = md['topics'];
+    var topics = md.topics;
     var tracker = "";
 
     for (var ent in topics) {
@@ -73,12 +74,12 @@ Twitter.prototype.init = function (md) {
                 }
                 if (isin == true) {
                     twitterSetEntity(entity, property, value, timestamp);
-                    var se = SENTI(event.text);
-                    var property = 'sentiment';
-                    // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room'], words: [], positive: [], negative: [] }
-                    var value = se['comparative'];
+                    var se = sentiment.analyze(event.text);
+                    var properties = 'sentiment';
+                    // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room, words: [], positive: [], negative: [] }
+                    var values = se.comparative;
                     if (Math.abs(value) > 0.01) {
-                        twitterSetEntity(entity, property, value, timestamp);
+                        twitterSetEntity(entity, properties, values, timestamp);
                     }
                 }
             }
@@ -107,6 +108,6 @@ Twitter.prototype.init = function (md) {
     */
 
     XE.LogF("syncognite", "Twitter", "Info", "Starting twitter stream");
-}
+};
 
 module.exports = new Twitter();
