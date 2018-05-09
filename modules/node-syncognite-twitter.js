@@ -75,6 +75,8 @@ Twitter.prototype.init = function (md) {
                 if (isin == true) {
                     twitterSetEntity(entity, property, value, timestamp);
                     var se = sentiment.analyze(event.text);
+                    console.log(se);
+                    XE.LogF("syncognite", "Sentiment", "Info", se.comparative.toString());
                     var properties = 'sentiment';
                     // { score: 0, comparative: 0, tokens: [ 'searles', 'chinese', 'room, words: [], positive: [], negative: [] }
                     var values = se.comparative;
