@@ -48,9 +48,9 @@ Edit and enable or disable sub-modules as needed. Some of the modules might requ
 
 * Create a folder `Certs` and fill in public and private certificates for secure communcation. The names must match the names in `node-syncognite.json`, defaults are `Certs/node-syncognite-key.pem`, `./Certs/node-syncognite-pub.pem`. 
 
-You can create a pair of certificates by copying:
+**Dependencies:** `openssl`, available certificate authority (CA) key. See for example [here](https://gist.github.com/fntlnz/cf14feb5a46b2eda428e000157447309) on how to create a root CA with openssl.
 
-Dependencies: `openssl`, available certificate authority (CA) key. See for example [here](https://gist.github.com/fntlnz/cf14feb5a46b2eda428e000157447309) on how to create a root CA with openssl.
+You can create a pair of certificates by copying:
 
 ```bash
 cp make-local-cert.sh.default make-local-cert.sh
