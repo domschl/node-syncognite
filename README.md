@@ -45,3 +45,31 @@ FHEM
 * Copy `node-syncognite.json.default` to `node-syncognite.json`
 
 Edit and enable or disable sub-modules as needed. Some of the modules might require credentials, certificates or user configuration.
+
+* Create a folder `Certs` and fill in public and private certificates for secure communcation. The names must match the names in `node-syncognite.json`, defaults are `Certs/node-syncognite-key.pem`, `./Certs/node-syncognite-pub.pem`. 
+
+You can create a pair of certificates by copying:
+
+Dependencies: `openssl`, available certificate authority (CA) key. See for example [here](https://gist.github.com/fntlnz/cf14feb5a46b2eda428e000157447309) on how to create a root CA with openssl.
+
+```bash
+cp make-local-cert.sh.default make-local-cert.sh
+chmod a+x make-local-cert.sh
+```
+
+Then fill in valid data in `make-local-cert.sh` header:
+
+```bash
+#!/bin/bash
+
+HOSTNAME=`hostname -f`
+DOMAINNAME=`dnsdomainname`
+CERT_FILENAME="node-syncognite"
+COUNTRY="US"   # <-- change
+PROVINCE="CA"   # <-- change
+CITY="San Jose"   # <-- change
+ORGANISATION="Acme Inc"   # <-- change
+LOC_NAMES="/C=$COUNTRY/ST=$PROVINCE/O=$ORGANISATION"
+AUTHORITY_PRIV_KEY="path-to-private-key-of-signing-authority"   # <-- change, CA priv key
+AUTHORITY_PUB_KEY="path-to-pub-cert-of-signing-authority"   # <-- change, CA pub key
+```
