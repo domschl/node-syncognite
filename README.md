@@ -10,6 +10,7 @@ node-syncognite is a Node JS based service that gathers real-time data from home
 
 ## History
 
+* 0.1.2: (2018-01-11) Security update, cryptiles dependency removed, all dependencies updated.
 * 0.1.1: Security update for hoek<5.0.3, all dependent modules updated, fixes for breakages in zmq -> zeromq, mongodb -> 3.x, new version of sentiment.
 
 ## Next steps
