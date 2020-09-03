@@ -9,7 +9,7 @@ global.subscriptions = {};
 function setup() {
     var progdir = pa.dirname(process.argv[1]);
     var conffile = pa.join(progdir, 'node-syncognite.json');
-    console.log("syncognite 0.1.3"); // TODO: sync with package.json
+    console.log("syncognite 0.1.4"); // TODO: sync with package.json
     console.log("Starting: " + progdir + ", conf: " + conffile);
     fs.readFile(conffile, 'utf8', function (err, data) {
         var configXK;
