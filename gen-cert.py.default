@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import socket
+
+######### THIS SECTION MUST BE CUSTOMIZED ###############
+sdef = {                                    # <--- Change! Default ID information
+    "country": "DE",
+    "state": "Bavaria",
+    "location": "Octoberfest",
+    "organisation": "Acme",
+    "org unit": "Acme",
+    "common name": "{}",
+    "email": "my@email.org"
+}
+rootcert = "path-to-ca-cert.pem"            # <--- Change!
+rootpriv = "path-to-ca-private-key.pem"
+########## END SECTION ##################################
+
+if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == 'help' or sys.argv[1] == '--help'):
+    print("gen-cert.py <host fqdn> [more host fqdns]")
+    print("          host fqdn: for local computers simply hostname without domain,")
+    print("                for externally reachable use fully qualified domain name.")
+    print("          multiple host fqdns can be given, separated by space.")
+    print("  e.g. gen-cert.py mylocalsuperserver mylocalsuperserver.192.168.1.1.xip.io")
+    print("       gen-cert.py server.company.com www.server.company.com")
+    print(" Supports subjectAltName and extendedKeyUsage, cert validity 398 days (cur. apple max.)")
+    exit(-1)
+
+# Note: xip.io domain format (see http://xip.io):   <hostname>.<id-address>.xip.io
+
+fqdns = []
+args = sys.argv
+if len(args) == 1:
+    args.append(socket.gethostname().split('.')[0])
+    print(
+        f"Using hostname: {args[1]}, if that's not what you want, try 'gen_cert.py -h'")
+for i in range(1, len(args)):
+    fqdns.append("DNS.{} = {}".format(i, args[i]))
+fqdn = args[1]
+
+v3ext = """authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+extendedKeyUsage = serverAuth
+
+[alt_names]
+"""
+# DNS.1 = {}
+# v3extip = "DNS.2 = {}.{}.xip.io"
+
+# Generate private key:
+print("Private key: {}-key.pem".format(fqdn))
+os.system("openssl genrsa -out {}-key.pem 2048".format(fqdn))
+
+# Create v3 extension parameter file for subjectAltName and extendedKeyUsage
+v3all = v3ext
+for fqdni in fqdns:
+    v3all += fqdni + "\n"
+with open("v3.ext", "w") as f:
+    f.write(v3all)
+
+# Populate ID stuff:
+subj = "/C={}/ST={}/L={}/O={}/OU={}/CN={}/emailAddress={}".format(
+    sdef["country"], sdef["state"], sdef["location"], sdef["organisation"],
+    sdef["org unit"], fqdn, sdef["email"])
+
+print("Subj: {}".format(subj))
+
+# Certificate request:
+print("CSR:")
+os.system(
+    "openssl req -new -key {}-key.pem -out {}.csr -subj {}".format(fqdn, fqdn, subj))
+
+# Sign certificate: (Note: longer than 825 days doesn't work with Apple any more!)
+print("Sign certificate {}.pem:".format(fqdn))
+os.system("openssl x509 -req -in {}.csr -CA {} -CAkey {} -CAcreateserial -out {}.pem -days 398 -sha256 -extfile v3.ext".format(
+    fqdn, rootcert, rootpriv, fqdn))
+print("You now have:")
+print("  a certificate: {}.pem".format(fqdn))
+print("  a private key: {}-key.pem".format(fqdn))

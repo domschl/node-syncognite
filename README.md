@@ -54,23 +54,7 @@ Edit and enable or disable sub-modules as needed. Some of the modules might requ
 You can create a pair of certificates by copying:
 
 ```bash
-cp make-local-cert.sh.default make-local-cert.sh
-chmod a+x make-local-cert.sh
+cp gen-cert.py.default gen-cert.py
 ```
 
-Then fill in valid data in `make-local-cert.sh` header:
-
-```bash
-#!/bin/bash
-
-HOSTNAME=`hostname -f`
-DOMAINNAME=`dnsdomainname`
-CERT_FILENAME="node-syncognite"
-COUNTRY="US"   # <-- change
-PROVINCE="CA"   # <-- change
-CITY="San Jose"   # <-- change
-ORGANISATION="Acme Inc"   # <-- change
-LOC_NAMES="/C=$COUNTRY/ST=$PROVINCE/O=$ORGANISATION"
-AUTHORITY_PRIV_KEY="path-to-private-key-of-signing-authority"   # <-- change, CA priv key
-AUTHORITY_PUB_KEY="path-to-pub-cert-of-signing-authority"   # <-- change, CA pub key
-```
+Then fill in valid data in `gen-cert.py` and execute from `Certs` directory and update cert names in node-syncognite.json.
