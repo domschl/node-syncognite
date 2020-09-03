@@ -1,4 +1,7 @@
 # Logs
+Certs/*.pem
+Certs/*.ext
+Certs/*.csr
 logs
 *.log
 npm-debug.log*
@@ -48,6 +51,7 @@ node_modules/
 
 node-syncognite.json
 make-local-cert.sh
+gen-cert.py
 
 .directory
 
