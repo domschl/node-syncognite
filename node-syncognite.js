@@ -100,7 +100,7 @@ function entitySetProperty(entity, property, val, timestamp) {
 
     var dobj = entityStates[entity];
 
-    if (MDb!=0) {
+    if (MDb!=null) {
     if (MDb.db() !== 0) {
         if (dobj == undefined) { // New entity:
             entityStates[entity] = {};
