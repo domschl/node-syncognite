@@ -15,7 +15,7 @@
         },
         "MongoDb": {
             "require": "./modules/node-syncognite-mongo.js",
-            "active": true
+            "active": false
         },
         "WebSocket": {
             "require": "./modules/node-syncognite-websocket.js",

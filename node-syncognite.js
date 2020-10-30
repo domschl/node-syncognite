@@ -2,6 +2,7 @@ var fs = require('fs');
 var pa = require('path');
 var mods = {};
 var CLog = {};
+var MDb = null;
 
 global.entityStates = {};
 global.subscriptions = {};
@@ -43,6 +44,7 @@ function setup() {
 setup();
 
 function xEventLog(msg) {
+    if (MDb!=null) {
     if (MDb.db() !== 0) {
         dblog = { //Date, Name, Level, Topic, Msg
             'Timestamp': msg.Date,
@@ -56,6 +58,7 @@ function xEventLog(msg) {
                 CLog.console("Inserting dblog record into mongo db failed!");
             }
         });
+    }
     }
 
     mods.WebSocket.obj.logevent(msg);
@@ -80,7 +83,8 @@ function entitySetProperty(entity, property, val, timestamp) {
     if (timestamp == "now") {
         CLog.console("Sombody tried to smash 'now' into the entitydb at :" + entity + "/" + property);
     }
-    if (MDb.db() !== 0) {
+    if (MDb!=null) {
+        if (MDb.db() !== 0) {
         dbEnt = { //Date, Name, Level, Topic, Msg
             'Timestamp': timestamp,
             'Entity': entity,
@@ -92,10 +96,11 @@ function entitySetProperty(entity, property, val, timestamp) {
                 CLog.console("Inserting dbent record into mongo db failed!");
             }
         });
-    }
+    }}
 
     var dobj = entityStates[entity];
 
+    if (MDb!=0) {
     if (MDb.db() !== 0) {
         if (dobj == undefined) { // New entity:
             entityStates[entity] = {};
@@ -122,7 +127,7 @@ function entitySetProperty(entity, property, val, timestamp) {
         }
     } else {
         CLog.console("Tried to write entity state, yet mongodb isn't up yet!");
-    }
+    }}
     LogF(entity, property, "Verbose", val);
     return 0;
 }

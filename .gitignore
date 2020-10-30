@@ -5,6 +5,8 @@ Certs/*.csr
 logs
 *.log
 npm-debug.log*
+*.csr
+v3.ext
 
 # Runtime data
 pids
