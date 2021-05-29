@@ -1,6 +1,6 @@
 {
   "name": "node-syncognite",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "description": "An event broker between different platforms and neural architectures",
   "main": "node-syncognite.js",
   "scripts": {
