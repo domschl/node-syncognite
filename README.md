@@ -10,6 +10,7 @@ node-syncognite is a Node JS based service that gathers real-time data from home
 
 ## History
 
+* 0.1.6: (2021-05-29) Dependencies security updates.
 * 0.1.5: (2020-10-30) Remove MongoDB requirement.
 * 0.1.4: (2020-09-03) Security update deps, new cert gen script (with v3.ext).
 * 0.1.3: (2019-05-14) Security update, mqtt-packet updated, all dependencies updated.
